@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Install — SendSMTP</title>
+  <meta name="description" content="Install SendSMTP via signed APT, .deb, or Windows MSI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="index.html">SendSMTP</a>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="install.html" aria-current="page" data-i18n="nav.install">Install</a>
+        <a href="guide.html" data-i18n="nav.guide">Guide</a>
+        <a href="cli.html" data-i18n="nav.cli">CLI</a>
+        <a href="config.html" data-i18n="nav.config">Config</a>
+        <a href="https://github.com/rootkit-lab/sendsmtp" data-i18n="nav.github">GitHub</a>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="pt" aria-pressed="false">PT</button>
+        </div>
+      </nav>
+    </header>
+
+    <div class="layout">
+      <aside class="side">
+        <h2 data-i18n="side.onthis">On this page</h2>
+        <a href="#apt">APT (Linux)</a>
+        <a href="#deb">Download .deb</a>
+        <a href="#msi">Windows MSI</a>
+        <a href="#source">From source</a>
+        <a href="#packages">Package table</a>
+        <h2 style="margin-top:1.5rem" data-i18n="side.pages">Docs</h2>
+        <a href="guide.html">Guide</a>
+        <a href="cli.html">CLI</a>
+        <a href="config.html">Config</a>
+      </aside>
+
+      <article class="main">
+        <h1>Install</h1>
+        <p>Release assets ship from GitHub. Linux users can also install from this site’s <strong>GPG-signed APT</strong> repository.</p>
+
+        <h2 id="apt">APT (Debian / Ubuntu)</h2>
+        <p>Adds a signed source pointing at this GitHub Pages host, then installs the package.</p>
+        <div class="pre-wrap">
+<pre>curl -fsSL https://rootkit-lab.github.io/sendsmtp/pubkey.gpg \
+  | sudo gpg --dearmor -o /usr/share/keyrings/sendsmtp.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/sendsmtp.gpg arch=amd64] \
+  https://rootkit-lab.github.io/sendsmtp stable main" \
+  | sudo tee /etc/apt/sources.list.d/sendsmtp.list
+
+sudo apt update
+sudo apt install sendsmtp</pre>
+        </div>
+        <div class="callout">
+          Public key: <a href="pubkey.gpg"><code>pubkey.gpg</code></a> ·
+          Index: <a href="dists/stable/InRelease"><code>dists/stable/InRelease</code></a>
+        </div>
+
+        <h2 id="deb">Download .deb</h2>
+        <p>From <a href="https://github.com/rootkit-lab/sendsmtp/releases">Releases</a>:</p>
+        <div class="pre-wrap">
+<pre>sudo apt install ./sendsmtp_*_amd64.deb</pre>
+        </div>
+
+        <h2 id="msi">Windows MSI</h2>
+        <p>Download <code>sendsmtp_*_amd64.msi</code> from Releases and run it, or:</p>
+        <div class="pre-wrap">
+<pre>msiexec /i sendsmtp_*_amd64.msi</pre>
+        </div>
+
+        <h2 id="source">From source (dev)</h2>
+        <div class="pre-wrap">
+<pre>cd frontend && npm install && cd ..
+wails3 dev
+# or: task dev</pre>
+        </div>
+        <p>Requirements: Go 1.25+, Node 20+, Wails v3 CLI. Linux needs WebKitGTK.</p>
+        <div class="pre-wrap">
+<pre>wails3 task linux:create:deb
+wails3 task windows:create:msi ARCH=amd64</pre>
+        </div>
+
+        <h2 id="packages">Package table</h2>
+        <table>
+          <thead>
+            <tr><th>Platform</th><th>Asset</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Linux (APT)</td><td><code>apt install sendsmtp</code> (this site)</td></tr>
+            <tr><td>Linux (.deb)</td><td><code>sendsmtp_*_amd64.deb</code></td></tr>
+            <tr><td>Windows</td><td><code>sendsmtp_*_amd64.msi</code></td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+
+    <footer class="footer">
+      <span>© 2026 SendSMTP · <a href="https://github.com/rootkit-lab/sendsmtp/blob/main/LICENSE" data-i18n="footer.mit">MIT License</a></span>
+      <a href="#apt" data-i18n="footer.apt">Signed APT on this site</a>
+    </footer>
+  </div>
+  <script src="assets/site.js"></script>
+</body>
+</html>
