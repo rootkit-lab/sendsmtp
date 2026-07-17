@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product
+    Id="*"
+    Name="SendSMTP"
+    Language="1033"
+    Version="0.1.0"
+    Manufacturer="SendSMTP"
+    UpgradeCode="A7B3C9E1-4D2F-4A8B-9C1E-2F6D8A0B5E73">
+    <Package
+      InstallerVersion="500"
+      Compressed="yes"
+      InstallScope="perMachine"
+      Description="SendSMTP — SMTP campaign desktop app"
+      Manufacturer="SendSMTP" />
+
+    <MajorUpgrade
+      DowngradeErrorMessage="A newer version of SendSMTP is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="SendSMTP" Level="1">
+      <ComponentRef Id="MainExecutable" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="SendSMTP">
+          <Component Id="MainExecutable" Guid="C9D5E1A3-6F4B-4C0D-9E3A-4B8F0C2D7A95">
+            <File Id="SendSmtpExe" Source="../../../bin/sendsmtp.exe" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="SendSMTP">
+          <Component Id="ApplicationShortcut" Guid="B8C4D0F2-5E3A-4B9C-8D2F-3A7E9B1C6F84">
+            <Shortcut
+              Id="ApplicationStartMenuShortcut"
+              Name="SendSMTP"
+              Description="SendSMTP desktop app"
+              Target="[INSTALLFOLDER]sendsmtp.exe"
+              WorkingDirectory="INSTALLFOLDER" />
+            <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+            <RegistryValue
+              Root="HKCU"
+              Key="Software\SendSMTP\SendSMTP"
+              Name="installed"
+              Type="integer"
+              Value="1"
+              KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Product>
+</Wix>

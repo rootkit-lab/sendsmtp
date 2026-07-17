@@ -1,0 +1,112 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  linux-deb:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.x"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev
+
+      - name: Install Wails CLI + nfpm
+        run: |
+          go install github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-alpha.88
+          go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+
+      - name: Frontend deps
+        run: cd frontend && npm ci
+
+      - name: Build .deb
+        run: wails3 task linux:create:deb
+
+      - name: List artifacts
+        run: ls -lah bin/
+
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: bin/*.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sendsmtp-linux-deb
+          path: bin/*.deb
+
+  windows-msi:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.x"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install tools
+        run: |
+          go install github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-alpha.88
+          choco install wixtoolset nsis -y
+        shell: bash
+
+      - name: Frontend deps
+        run: cd frontend && npm ci
+        shell: bash
+
+      - name: Build Windows exe + MSI + NSIS
+        shell: bash
+        run: |
+          export PATH="$HOME/go/bin:/c/Program Files (x86)/WiX Toolset v3.14/bin:/c/Program Files (x86)/NSIS:$PATH"
+          wails3 task windows:build ARCH=amd64
+          # MSI via WiX candle/light
+          candle -arch x64 -out bin/sendsmtp.wixobj build/windows/msi/sendsmtp.wxs
+          light -out bin/sendsmtp-amd64.msi bin/sendsmtp.wixobj
+          # NSIS installer (also useful)
+          wails3 task windows:create:nsis:installer ARCH=amd64
+          ls -lah bin/
+
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            bin/*.msi
+            bin/*installer.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sendsmtp-windows
+          path: |
+            bin/*.msi
+            bin/*installer.exe
+            bin/sendsmtp.exe

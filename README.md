@@ -24,7 +24,26 @@ The UI (`app.go`) and CLI (`cmd/sendsmtp`) share the same packages under `intern
 | Wails v3 CLI | `wails3` |
 | Linux / macOS / Windows | Per Wails platform support (Linux needs WebKitGTK) |
 
-## Quick start
+## Install (release)
+
+Download from [Releases](https://github.com/rootkit-lab/sendsmtp/releases):
+
+| Platform | Asset |
+|----------|--------|
+| Linux (Debian/Ubuntu) | `sendsmtp_*_amd64.deb` |
+| Windows | `sendsmtp_*_amd64.msi` |
+
+```bash
+# Debian / Ubuntu
+sudo apt install ./sendsmtp_*_amd64.deb
+
+# Windows — double-click the .msi, or:
+msiexec /i sendsmtp_*_amd64.msi
+```
+
+Tagged releases build `.deb` + `.msi` via GitHub Actions (`.github/workflows/release.yml`).
+
+## Quick start (from source)
 
 ```bash
 # Frontend deps
@@ -36,12 +55,11 @@ wails3 dev
 task dev
 ```
 
-Production build:
+Production packages:
 
 ```bash
-task build
-# or
-wails3 build
+wails3 task linux:create:deb
+wails3 task windows:create:msi ARCH=amd64   # needs wixl on Linux
 ```
 
 Regenerate TypeScript bindings after changing exported Go methods:

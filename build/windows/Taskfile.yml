@@ -96,13 +96,6 @@ tasks:
             fi
           done | tr '\n' ' '
 
-  package:
-    summary: Packages the application
-    cmds:
-      - task: '{{if eq (.FORMAT | default "nsis") "msix"}}create:msix:package{{else}}create:nsis:installer{{end}}'
-    vars:
-      FORMAT: '{{.FORMAT | default "nsis"}}'
-
   generate:syso:
     summary: Generates Windows `.syso` file
     dir: build
@@ -128,6 +121,25 @@ tasks:
     vars:
       ARCH: '{{.ARCH | default ARCH}}'
       ARG_FLAG: '{{if eq .ARCH "amd64"}}AMD64{{else}}ARM64{{end}}'
+
+  create:msi:
+    summary: Creates an MSI installer (via wixl)
+    deps:
+      - task: build
+    cmds:
+      - wixl -a x64 -o "{{.ROOT_DIR}}/{{.BIN_DIR}}/{{.APP_NAME}}-{{.ARCH}}.msi" "{{.ROOT_DIR}}/build/windows/msi/sendsmtp.wxs"
+    vars:
+      ARCH: '{{.ARCH | default "amd64"}}'
+    preconditions:
+      - sh: command -v wixl >/dev/null 2>&1
+        msg: "wixl is required for MSI packaging (apt install wixl)"
+
+  package:
+    summary: Packages the application
+    cmds:
+      - task: '{{if eq (.FORMAT | default "nsis") "msix"}}create:msix:package{{else if eq (.FORMAT | default "nsis") "msi"}}create:msi{{else}}create:nsis:installer{{end}}'
+    vars:
+      FORMAT: '{{.FORMAT | default "nsis"}}'
 
   create:msix:package:
     summary: Creates an MSIX package

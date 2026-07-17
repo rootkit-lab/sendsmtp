@@ -5,11 +5,11 @@
 	"info": {
 		"0000": {
 			"ProductVersion": "0.1.0",
-			"CompanyName": "My Company",
-			"FileDescription": "My Product Description",
-			"LegalCopyright": "© now, My Company",
-			"ProductName": "sendsmtp",
-			"Comments": "This is a comment"
+			"CompanyName": "SendSMTP",
+			"FileDescription": "SendSMTP — SMTP campaign desktop app",
+			"LegalCopyright": "© 2026 SendSMTP contributors",
+			"ProductName": "SendSMTP",
+			"Comments": "https://github.com/rootkit-lab/sendsmtp"
 		}
 	}
 }

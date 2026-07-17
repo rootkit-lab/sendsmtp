@@ -9,9 +9,9 @@ info:
   productName: "SendSMTP" # The name of the application
   productIdentifier: "com.wiz.sendsmtp" # The unique product identifier
   description: "SMTP bulk email sender" # The application description
-  copyright: "(c) 2025, SendSMTP" # Copyright text
-  comments: "Some Product Comments" # Comments
-  version: "0.0.1" # The application version
+  copyright: "(c) 2026, SendSMTP"
+  comments: "SMTP campaign desktop app"
+  version: "0.1.0" # The application version
   # cfBundleIconName: "appicon" # The macOS icon name in Assets.car icon bundles (optional)
   #                               # Should match the name of your .icon file without the extension
   #                               # If not set and Assets.car exists, defaults to "appicon"
