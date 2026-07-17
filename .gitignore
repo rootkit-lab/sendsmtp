@@ -5,6 +5,7 @@ build/apt/*.key
 build/apt/*secret*
 frontend/dist/
 frontend/node_modules/
+frontend/.vite/
 scripts/inbox-check/node_modules/
 data/sendsmtp.db
 data/sendsmtp.db-*
