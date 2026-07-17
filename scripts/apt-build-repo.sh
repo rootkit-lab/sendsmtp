@@ -90,34 +90,21 @@ fi
 gpg --batch --export --armor "$KEY_ID" > pubkey.asc
 gpg --batch --export "$KEY_ID" > pubkey.gpg
 
-# Simple landing page for humans
-cat > index.html <<'HTML'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>SendSMTP APT repository</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.5; }
-    code, pre { background: #f4f4f5; padding: 0.15em 0.4em; border-radius: 4px; }
-    pre { padding: 1rem; overflow-x: auto; }
-  </style>
-</head>
-<body>
-  <h1>SendSMTP APT</h1>
-  <p>Signed Debian package repository for <a href="https://github.com/rootkit-lab/sendsmtp">SendSMTP</a>.</p>
-  <pre>curl -fsSL https://rootkit-lab.github.io/sendsmtp/pubkey.gpg \
-  | sudo gpg --dearmor -o /usr/share/keyrings/sendsmtp.gpg
-
-echo "deb [signed-by=/usr/share/keyrings/sendsmtp.gpg arch=amd64] \
-  https://rootkit-lab.github.io/sendsmtp stable main" \
-  | sudo tee /etc/apt/sources.list.d/sendsmtp.list
-
-sudo apt update
-sudo apt install sendsmtp</pre>
-</body>
-</html>
-HTML
+# Human-facing docs site (keeps APT files at repo root)
+SITE_SRC="${APT_SITE_SRC:-}"
+if [[ -z "$SITE_SRC" ]]; then
+  # scripts/apt-build-repo.sh → repo root/website
+  SITE_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/website"
+fi
+if [[ -d "$SITE_SRC" ]]; then
+  cp -a "$SITE_SRC"/. .
+  # Prefer committed archive pubkey over site copies
+  if [[ -f "${SITE_SRC}/../build/apt/pubkey.gpg" ]]; then
+    cp -f "${SITE_SRC}/../build/apt/pubkey.gpg" pubkey.gpg
+    cp -f "${SITE_SRC}/../build/apt/pubkey.asc" pubkey.asc 2>/dev/null || true
+  fi
+fi
+touch .nojekyll
 
 popd >/dev/null
 echo "APT repo ready at $OUT"

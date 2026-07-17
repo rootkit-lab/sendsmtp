@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guide — SendSMTP</title>
+  <meta name="description" content="SMTP import, IMAP extract, emails, templates, and placeholders." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="index.html">SendSMTP</a>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="install.html" data-i18n="nav.install">Install</a>
+        <a href="guide.html" aria-current="page" data-i18n="nav.guide">Guide</a>
+        <a href="cli.html" data-i18n="nav.cli">CLI</a>
+        <a href="config.html" data-i18n="nav.config">Config</a>
+        <a href="https://github.com/rootkit-lab/sendsmtp" data-i18n="nav.github">GitHub</a>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="pt" aria-pressed="false">PT</button>
+        </div>
+      </nav>
+    </header>
+
+    <div class="layout">
+      <aside class="side">
+        <h2 data-i18n="side.onthis">On this page</h2>
+        <a href="#smtp">SMTP import</a>
+        <a href="#goscan">Goscan</a>
+        <a href="#imap">IMAP extract</a>
+        <a href="#emails">Emails</a>
+        <a href="#templates">Templates</a>
+        <a href="#inbox">Inbox check</a>
+        <a href="#i18n">UI languages</a>
+        <h2 style="margin-top:1.5rem" data-i18n="side.pages">Docs</h2>
+        <a href="install.html">Install</a>
+        <a href="cli.html">CLI</a>
+        <a href="config.html">Config</a>
+      </aside>
+
+      <article class="main">
+        <h1>Guide</h1>
+        <p>How SendSMTP discovers servers, loads recipients, and renders messages.</p>
+
+        <h2 id="smtp">SMTP import — <code>email;password</code></h2>
+        <div class="pre-wrap">
+<pre>user@company.com;SecretPass
+billing@example.com.br;AnotherPass</pre>
+        </div>
+        <ol>
+          <li>Parse domain from the address</li>
+          <li>Look up <strong>MX</strong> and map to a submission host when possible (e.g. Locaweb → <code>email-ssl.com.br</code>)</li>
+          <li>Probe AUTH on 587 STARTTLS and 465 SSL</li>
+          <li>Persist only accounts that authenticate</li>
+        </ol>
+        <p>Known consumer domains (Gmail, Outlook/M365, Yahoo, iCloud, Zoho, Proton, Locaweb, …) use fixed submission hosts. Custom domains use MX fingerprints. Inbound relays (<code>mx.*</code>) are <strong>not</strong> used as submission targets.</p>
+
+        <h2 id="goscan">Goscan — explicit host</h2>
+        <div class="pre-wrap">
+<pre>--- SMTP config (goscan) ---
+domain: example.com
+account_label: MAIL/SMTP
+host: mail.example.com
+port: 587
+encryption: tls
+from: info@example.com
+user: info@example.com
+password: secret</pre>
+        </div>
+        <div class="callout warn">
+          <code>from</code> / <code>user</code> must be real emails. Values like <code>${MAIL_USERNAME}</code> are <strong>not</strong> expanded.
+        </div>
+
+        <h2 id="imap">IMAP contact extract</h2>
+        <p>On the <strong>SMTPs</strong> page → Extract contacts (one or all):</p>
+        <ol>
+          <li>Discover IMAP (SMTP host hint + <code>imap.</code> / <code>mail.</code> / provider hosts)</li>
+          <li>Scan INBOX + Sent (~150 messages)</li>
+          <li>Collect contact addresses and <code>email;password</code> pairs</li>
+          <li>Write files under <code>data/extracted/</code></li>
+          <li>Import contacts into the Emails queue automatically</li>
+          <li>Import credentials as SMTPs (with discovery)</li>
+        </ol>
+
+        <h2 id="emails">Emails</h2>
+        <ul>
+          <li>Import always normalizes and deduplicates (<code>UNIQUE(address)</code> — no re-send to addresses already stored)</li>
+          <li>Large lists: use <strong>Import file</strong> (path-only IPC). Huge pastes can break the Wails runtime</li>
+          <li><strong>Validate</strong>: syntax + resolvable MX + disposable blocklist; DNS lookups are paced</li>
+          <li>Status counts are cached in <code>email_counts</code> for a fast dashboard on large DBs</li>
+        </ul>
+
+        <h2 id="templates">Templates</h2>
+        <p>Working files: <code>data/msg.html</code>, <code>data/assuntos.txt</code> (subjects).</p>
+        <table>
+          <thead>
+            <tr><th>Placeholder</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>{{email}}</code></td><td>Recipient</td></tr>
+            <tr><td><code>{{link}}</code></td><td>Link from the list + <code>?p=&lt;email&gt;</code> at send time</td></tr>
+            <tr><td><code>{{assunto}}</code> / <code>{{subject}}</code></td><td>Processed subject line</td></tr>
+            <tr><td><code>{{from}}</code></td><td>SMTP From (sanitized)</td></tr>
+            <tr><td><code>{{uniq}}</code> / <code>{{id}}</code></td><td>Per-send unique id</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          Do not hardcode <code>?p=</code> in HTML or <code>links.txt</code> — <code>mailer.PersonalizeLink</code> adds it.
+        </div>
+        <p>Spintax: <code>{a|b|c}</code> (pipe required). <code>{Status}</code> alone stays literal.</p>
+        <p>Optional footer From:</p>
+        <div class="pre-wrap">
+<pre>&lt;span data-from&gt;{{from}}&lt;/span&gt;</pre>
+        </div>
+
+        <h2 id="inbox">Inbox check (MailReach)</h2>
+        <p><strong>Check / Analyze</strong> uses the <a href="https://www.mailreach.co/email-spam-test">MailReach free spam test</a>. Free tier ≈ 3 tests / 24h.</p>
+        <div class="pre-wrap">
+<pre>cd scripts/inbox-check && npm i && npx playwright install chromium</pre>
+        </div>
+
+        <h2 id="i18n">UI languages</h2>
+        <p>English (default for non-<code>pt*</code> browsers) and Português. Switch under <strong>Settings → Language</strong>.</p>
+      </article>
+    </div>
+
+    <footer class="footer">
+      <span>© 2026 SendSMTP · <a href="https://github.com/rootkit-lab/sendsmtp/blob/main/LICENSE" data-i18n="footer.mit">MIT License</a></span>
+      <a href="install.html#apt" data-i18n="footer.apt">Signed APT on this site</a>
+    </footer>
+  </div>
+  <script src="assets/site.js"></script>
+</body>
+</html>

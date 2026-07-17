@@ -1,0 +1,39 @@
+name: Docs site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - "scripts/deploy-website.sh"
+      - ".github/workflows/pages-docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Overlay website onto gh-pages
+        run: |
+          set -euo pipefail
+          chmod +x scripts/deploy-website.sh
+          # Use GITHUB_TOKEN remote for push
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          ./scripts/deploy-website.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_AUTHOR_NAME: SendSMTP Docs
+          GIT_AUTHOR_EMAIL: apt@sendsmtp.dev
+          GIT_COMMITTER_NAME: SendSMTP Docs
+          GIT_COMMITTER_EMAIL: apt@sendsmtp.dev
