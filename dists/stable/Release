@@ -1,0 +1,24 @@
+Architectures: amd64
+Codename: stable
+Components: main
+Date: Fri, 17 Jul 2026 03:51:29 +0000
+Description: SendSMTP APT repository
+Label: SendSMTP
+Origin: SendSMTP
+Suite: stable
+MD5Sum:
+ a6054dc54bf9f40320952368e7434643              177 Release
+ 034641e49d84547431db6770d0e6659f             1474 main/binary-amd64/Packages
+ 15370a700a7c282d5c74ae876521fcf7              540 main/binary-amd64/Packages.gz
+SHA1:
+ 1e34ba516359a1f5c2d84ae044f675315a00615f              177 Release
+ c74bd62ea2a891d4ee628588b146640dc23e59c2             1474 main/binary-amd64/Packages
+ 23c0eff76f84282c6eb038e01aa90252ebad4005              540 main/binary-amd64/Packages.gz
+SHA256:
+ 479669f6e6afbc1d0af57846dae5eb12ceb75afd9c2bdd6ed93769e3bf77f47e              177 Release
+ 39383aec6dd68c487dc3a0181831a9be7d15076f25bd3a2f6ea93962f03afaf8             1474 main/binary-amd64/Packages
+ 56293e824bf900da0ae07f79aaecbccf4a0b0a5a14ce35bc6f50bba4763bfcbb              540 main/binary-amd64/Packages.gz
+SHA512:
+ 3cdb2fc1964947b2a7e94f4bda937e7721f9b41929f8c173e15557171c00d9d7f2aea4ea4479d74dff308b7d174ec667d7101dac51756372ad58f99ba3f0f7dd              177 Release
+ a6bb9ac08d5483f5da524bdf7488aff5a10182bd78ea1a9a980a85aa24ed48d93c19f8266f98d96ed14e97df1e2b5b66d724f8cc949c3e4d047413d9ce3dcfda             1474 main/binary-amd64/Packages
+ 8c8215804d219bc0c20cf3bb7772c30460d3690cded5147f75d054543a5fa0a22f646c43e1a5a927dfe07b12f5b9e416ea588068903d49f89038ddc83967dc29              540 main/binary-amd64/Packages.gz
