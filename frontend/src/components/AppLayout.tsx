@@ -1,16 +1,18 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { LayoutDashboard, Server, Mail, FileText, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const nav = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/smtps", label: "SMTPs", icon: Server },
-  { to: "/emails", label: "Emails", icon: Mail },
-  { to: "/content", label: "Conteúdo", icon: FileText },
-  { to: "/settings", label: "Settings", icon: Settings },
-];
+import { useTranslation } from "@/i18n";
 
 export function AppLayout() {
+  const { t } = useTranslation();
+  const nav = [
+    { to: "/", label: t("nav.dashboard"), icon: LayoutDashboard },
+    { to: "/smtps", label: t("nav.smtps"), icon: Server },
+    { to: "/emails", label: t("nav.emails"), icon: Mail },
+    { to: "/content", label: t("nav.content"), icon: FileText },
+    { to: "/settings", label: t("nav.settings"), icon: Settings },
+  ];
+
   return (
     <div className="flex h-full min-h-0">
       <aside className="flex w-56 shrink-0 flex-col border-r border-stone-300/80 bg-[#fffdf9]/80 backdrop-blur">
@@ -18,7 +20,7 @@ export function AppLayout() {
           <div className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-stone-900">
             SendSMTP
           </div>
-          <p className="mt-1 text-xs text-stone-500">envio concorrente via SMTP</p>
+          <p className="mt-1 text-xs text-stone-500">{t("app.tagline")}</p>
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-3">
           {nav.map((item) => (

@@ -15,21 +15,8 @@ import type { SMTP } from "../../bindings/github.com/wiz/sendsmtp/internal/store
 import { Button } from "@/components/ui/button";
 import { Badge, Label, Textarea } from "@/components/ui/form";
 import { ProgressBar, eventData, type ProgressInfo } from "@/components/ui/progress";
+import { useTranslation } from "@/i18n";
 import { toast } from "sonner";
-
-const placeholder = `atendimento@creluz.com.br;@Creluz2026
-outro@empresa.com;senha123
-
-# ou formato goscan:
---- SMTP config (goscan) ---
-domain: example.com
-account_label: MAIL/SMTP
-host: mail.example.com
-port: 587
-encryption: tls
-from: info@example.com
-user: info@example.com
-password: secret`;
 
 function inboxTone(label: string): "ok" | "warn" | "danger" | "neutral" | "accent" {
   switch (label) {
@@ -45,6 +32,7 @@ function inboxTone(label: string): "ok" | "warn" | "danger" | "neutral" | "accen
 }
 
 export function SmtpsPage() {
+  const { t } = useTranslation();
   const [raw, setRaw] = useState("");
   const [list, setList] = useState<SMTP[]>([]);
   const [busy, setBusy] = useState(false);
@@ -90,12 +78,15 @@ export function SmtpsPage() {
 
   async function onImport() {
     setBusy(true);
-    setProgress({ job: "smtps-import", phase: "parse", percent: 2, message: "Importando SMTPs…" });
+    setProgress({ job: "smtps-import", phase: "parse", percent: 2, message: t("smtps.toast.importing") });
     try {
       const res = await ImportSmtpsText(raw);
       toast.success(
-        `Importados: ${res.inserted} novos, ${res.updated} atualizados` +
-          (res.invalid ? `, ${res.invalid} falha discovery` : "")
+        t("smtps.toast.imported", {
+          inserted: res.inserted,
+          updated: res.updated,
+          invalid: res.invalid ? t("smtps.toast.invalidPart", { n: res.invalid }) : "",
+        })
       );
       setRaw("");
       await refresh();
@@ -114,13 +105,19 @@ export function SmtpsPage() {
       phase: "create",
       smtp_id: id,
       percent: 2,
-      message: `Check SMTP #${id}…`,
+      message: t("smtps.progress.checkOne", { id }),
     });
     try {
       const sum = await AnalyzeSmtp(id);
       toast.success(
-        `SMTP #${id}: ${sum.label} · score ${Number(sum.score).toFixed(0)} · inbox ${sum.inbox}/${sum.total}` +
-          (sum.report_url ? ` · ${sum.report_url}` : "")
+        t("smtps.toast.analyze", {
+          id,
+          label: sum.label,
+          score: Number(sum.score).toFixed(0),
+          inbox: sum.inbox,
+          total: sum.total,
+          url: sum.report_url ? ` · ${sum.report_url}` : "",
+        })
       );
       await refresh();
     } catch (e: any) {
@@ -139,16 +136,21 @@ export function SmtpsPage() {
       phase: "start",
       smtp_id: id,
       percent: 2,
-      message: `Extrair IMAP #${id}…`,
+      message: t("smtps.progress.extractOne", { id }),
     });
     try {
       const res = await ExtractSmtpContacts(id);
       setLastExtract(res);
       const n = Number(res.contact_count) || res.contacts?.length || 0;
       toast.success(
-        `#${id}: ${n} contatos na lista de Emails (+${res.imported_emails} novos, ${res.skipped_emails} já existiam)` +
-          ` · ${res.credentials?.length || 0} senhas` +
-          (res.imap_host ? ` · ${res.imap_host}:${res.imap_port}` : "")
+        t("smtps.toast.extract", {
+          id,
+          n,
+          imported: res.imported_emails,
+          skipped: res.skipped_emails,
+          creds: res.credentials?.length || 0,
+          imap: res.imap_host ? ` · ${res.imap_host}:${res.imap_port}` : "",
+        })
       );
       await refresh();
     } catch (e: any) {
@@ -161,11 +163,7 @@ export function SmtpsPage() {
 
   async function onAnalyzeAll() {
     if (!list.length) return;
-    if (
-      !window.confirm(
-        `Check/Analise em ${list.length} SMTP(s)? Seeds MailReach (~28) são repartidas; se houver mais SMTPs que seeds, rodam vários testes (limite free ≈ 3/dia).`
-      )
-    ) {
+    if (!window.confirm(t("smtps.confirmAnalyzeAll", { n: list.length }))) {
       return;
     }
     setAnalyzingAll(true);
@@ -175,11 +173,18 @@ export function SmtpsPage() {
       percent: 1,
       current: 0,
       total: list.length,
-      message: `Check all: ${list.length} SMTPs…`,
+      message: t("smtps.progress.checkAll", { n: list.length }),
     });
     try {
       const res = await AnalyzeAllSmtps();
-      toast.success(`Check all: ${res.ok} ok, ${res.failed} falha, ${res.batches} lote(s) · total ${res.total}`);
+      toast.success(
+        t("smtps.toast.analyzeAll", {
+          ok: res.ok,
+          failed: res.failed,
+          batches: res.batches,
+          total: res.total,
+        })
+      );
       await refresh();
     } catch (e: any) {
       toast.error(String(e?.message ?? e));
@@ -191,11 +196,7 @@ export function SmtpsPage() {
 
   async function onExtractAll() {
     if (!list.length) return;
-    if (
-      !window.confirm(
-        `Extrair contatos via IMAP em ${list.length} SMTP(s)? Contatos entram automaticamente na lista de Emails.`
-      )
-    ) {
+    if (!window.confirm(t("smtps.confirmExtractAll", { n: list.length }))) {
       return;
     }
     setExtractingAll(true);
@@ -206,7 +207,7 @@ export function SmtpsPage() {
       percent: 1,
       current: 0,
       total: list.length,
-      message: `Extrair todos: ${list.length}…`,
+      message: t("smtps.progress.extractAll", { n: list.length }),
     });
     try {
       const map = await ExtractAllSmtpContacts();
@@ -223,7 +224,13 @@ export function SmtpsPage() {
         skipped += Number(r?.skipped_emails) || 0;
       });
       toast.success(
-        `Extração: ${ok} ok · ${contacts} contatos → Emails (+${imported} novos, ${skipped} já existiam) · ${creds} senhas`
+        t("smtps.toast.extractAll", {
+          ok,
+          contacts,
+          imported,
+          skipped,
+          creds,
+        })
       );
       await refresh();
     } catch (e: any) {
@@ -237,53 +244,60 @@ export function SmtpsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       <header>
-        <h1 className="font-[family-name:var(--font-display)] text-3xl">SMTPs</h1>
-        <p className="mt-1 text-stone-500">
-          Goscan ou <code className="text-xs">email;senha</code> · Check MailReach · Extrair contatos (entra na lista de
-          Emails)
-        </p>
+        <h1 className="font-[family-name:var(--font-display)] text-3xl">{t("smtps.title")}</h1>
+        <p className="mt-1 text-stone-500">{t("smtps.subtitle")}</p>
       </header>
 
       <section className="space-y-3">
-        <Label>Colar SMTPs</Label>
-        <p className="text-xs text-stone-500">
-          Formato <code className="rounded bg-stone-100 px-1">email;senha</code> (discovery automático) ou bloco goscan
-        </p>
+        <Label>{t("smtps.pasteLabel")}</Label>
+        <p className="text-xs text-stone-500">{t("smtps.pasteHint")}</p>
         <Textarea
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
-          placeholder={placeholder}
+          placeholder={t("smtps.placeholder")}
           className="min-h-[200px]"
           disabled={working}
         />
         <ProgressBar info={working ? progress : null} />
         <div className="flex flex-wrap gap-2">
           <Button disabled={busy || !raw.trim() || working} onClick={onImport}>
-            {busy ? "Importando…" : "Importar SMTPs"}
+            {busy ? t("smtps.importing") : t("smtps.import")}
           </Button>
           <Button variant="secondary" disabled={working || !list.length} onClick={onAnalyzeAll}>
-            {analyzingAll ? "Check all…" : "Check / Analise todos"}
+            {analyzingAll ? t("smtps.checkAllBusy") : t("smtps.checkAll")}
           </Button>
           <Button variant="secondary" disabled={working || !list.length} onClick={onExtractAll}>
-            {extractingAll ? "Extraindo…" : "Extrair contatos todos"}
+            {extractingAll ? t("smtps.extractAllBusy") : t("smtps.extractAll")}
           </Button>
         </div>
       </section>
 
       {lastExtract ? (
         <section className="rounded-lg border border-stone-300/80 bg-white/70 p-4 text-sm">
-          <h2 className="font-medium text-stone-800">Última extração</h2>
+          <h2 className="font-medium text-stone-800">{t("smtps.lastExtract")}</h2>
           <p className="mt-1 text-stone-600">
-            IMAP {lastExtract.imap_host}:{lastExtract.imap_port} · {lastExtract.messages_scanned} msgs ·{" "}
-            {Number(lastExtract.contact_count) || lastExtract.contacts?.length || 0} contatos ·{" "}
-            {lastExtract.credentials?.length || 0} senhas
+            {t("smtps.lastExtractMeta", {
+              host: lastExtract.imap_host,
+              port: lastExtract.imap_port,
+              msgs: lastExtract.messages_scanned,
+              contacts: Number(lastExtract.contact_count) || lastExtract.contacts?.length || 0,
+              creds: lastExtract.credentials?.length || 0,
+            })}
           </p>
           <p className="mt-1 text-teal-800">
-            Lista de Emails: +{lastExtract.imported_emails} novos
-            {lastExtract.skipped_emails ? `, ${lastExtract.skipped_emails} já existiam` : ""}
-            {lastExtract.imported_smtps || lastExtract.updated_smtps
-              ? ` · SMTPs +${lastExtract.imported_smtps}/${lastExtract.updated_smtps} upd`
-              : ""}
+            {t("smtps.lastExtractQueue", {
+              imported: lastExtract.imported_emails,
+              skipped: lastExtract.skipped_emails
+                ? t("smtps.lastExtractSkipped", { n: lastExtract.skipped_emails })
+                : "",
+              smtps:
+                lastExtract.imported_smtps || lastExtract.updated_smtps
+                  ? t("smtps.lastExtractSmtps", {
+                      ins: lastExtract.imported_smtps,
+                      upd: lastExtract.updated_smtps,
+                    })
+                  : "",
+            })}
           </p>
           <p className="mt-1 font-mono text-xs text-stone-500">
             {lastExtract.contacts_file}
@@ -291,7 +305,7 @@ export function SmtpsPage() {
           </p>
           {lastExtract.contacts?.length ? (
             <details className="mt-2">
-              <summary className="cursor-pointer text-xs text-stone-500">Ver contatos (prévia)</summary>
+              <summary className="cursor-pointer text-xs text-stone-500">{t("smtps.viewContacts")}</summary>
               <pre className="mt-1 max-h-40 overflow-auto rounded bg-stone-50 p-2 text-xs">
                 {(lastExtract.contacts || []).slice(0, 200).join("\n")}
               </pre>
@@ -299,7 +313,7 @@ export function SmtpsPage() {
           ) : null}
           {lastExtract.credentials?.length ? (
             <details className="mt-2">
-              <summary className="cursor-pointer text-xs text-stone-500">Ver senhas (email;senha)</summary>
+              <summary className="cursor-pointer text-xs text-stone-500">{t("smtps.viewCreds")}</summary>
               <pre className="mt-1 max-h-40 overflow-auto rounded bg-stone-50 p-2 text-xs">
                 {(lastExtract.credentials || [])
                   .slice(0, 100)
@@ -315,13 +329,13 @@ export function SmtpsPage() {
         <table className="w-full min-w-[900px] text-left text-sm">
           <thead className="border-b border-stone-300 bg-stone-100/80 text-xs uppercase text-stone-500">
             <tr>
-              <th className="px-3 py-2">Host</th>
-              <th className="px-3 py-2">From</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Inbox</th>
-              <th className="px-3 py-2">Score</th>
-              <th className="px-3 py-2">Sent</th>
-              <th className="px-3 py-2">Ações</th>
+              <th className="px-3 py-2">{t("common.host")}</th>
+              <th className="px-3 py-2">{t("common.from")}</th>
+              <th className="px-3 py-2">{t("common.status")}</th>
+              <th className="px-3 py-2">{t("common.inbox")}</th>
+              <th className="px-3 py-2">{t("common.score")}</th>
+              <th className="px-3 py-2">{t("common.sent")}</th>
+              <th className="px-3 py-2">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -332,7 +346,9 @@ export function SmtpsPage() {
                 </td>
                 <td className="px-3 py-2">{s.from_addr}</td>
                 <td className="px-3 py-2">
-                  <Badge tone={s.status === "active" ? "ok" : "danger"}>{s.status}</Badge>
+                  <Badge tone={s.status === "active" ? "ok" : "danger"}>
+                    {s.status === "active" ? t("common.active") : t("common.disabled")}
+                  </Badge>
                 </td>
                 <td className="px-3 py-2">
                   {s.inbox_label ? (
@@ -362,19 +378,19 @@ export function SmtpsPage() {
                       onClick={async () => {
                         try {
                           await TestSmtp(s.id, "");
-                          toast.success(`SMTP #${s.id} OK`);
+                          toast.success(t("smtps.toast.testOk", { id: s.id }));
                         } catch (e: any) {
                           toast.error(String(e?.message ?? e));
                         }
                       }}
                     >
-                      Test
+                      {t("common.test")}
                     </Button>
                     <Button size="sm" variant="default" disabled={working} onClick={() => onAnalyze(s.id)}>
-                      {analyzing === s.id ? "Analisando…" : "Check / Analise"}
+                      {analyzing === s.id ? t("smtps.analyzing") : t("smtps.check")}
                     </Button>
                     <Button size="sm" variant="secondary" disabled={working} onClick={() => onExtract(s.id)}>
-                      {extracting === s.id ? "Extraindo…" : "Extrair contatos"}
+                      {extracting === s.id ? t("smtps.extracting") : t("smtps.extract")}
                     </Button>
                     <Button
                       size="sm"
@@ -385,7 +401,7 @@ export function SmtpsPage() {
                         refresh();
                       }}
                     >
-                      {s.status === "active" ? "Disable" : "Enable"}
+                      {s.status === "active" ? t("common.disable") : t("common.enable")}
                     </Button>
                   </div>
                   {(analyzing === s.id || extracting === s.id) &&
@@ -405,7 +421,7 @@ export function SmtpsPage() {
             {!list.length && (
               <tr>
                 <td colSpan={7} className="px-3 py-8 text-center text-stone-500">
-                  Nenhum SMTP importado
+                  {t("smtps.empty")}
                 </td>
               </tr>
             )}

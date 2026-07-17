@@ -24,3 +24,4 @@ alwaysApply: true
 - Do not commit secrets: `data/smtps.txt`, `data/sendsmtp.db`, `data/extracted/`, passwords.
 - Bindings: regenerate with `wails3 generate bindings -ts -d frontend/bindings ./...`
 - Dev: `wails3 dev` / `task dev`. CLI: `go build -o bin/sendsmtp-cli ./cmd/sendsmtp`.
+- **i18n**: all UI copy via `useTranslation()` / `t("key")` from `@/i18n`. Catalogs `frontend/src/i18n/locales/{en,pt}.ts`. Language switch in Settings. See skill `.cursor/skills/sendsmtp-i18n`. Never hardcode user-facing strings in React components.

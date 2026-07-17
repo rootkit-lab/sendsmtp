@@ -191,6 +191,12 @@ Use `data/*.example.*` for setup. See [`.gitignore`](.gitignore).
 
 In Agent chat, type `/` and pick: `dev`, `build`, `import-all`, `send`, `status`, `test-smtp`, `reset-failed`, `add-smtp-help`.
 
+## i18n
+
+UI languages: **English** (default for non-`pt*` browsers) and **Português**. Switch under **Settings → Language** (stored in `localStorage`).
+
+All React copy goes through `useTranslation()` / `t("key")` — catalogs in `frontend/src/i18n/locales/`. Agent skill: `.cursor/skills/sendsmtp-i18n`.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

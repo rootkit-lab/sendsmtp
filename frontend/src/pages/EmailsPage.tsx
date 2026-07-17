@@ -12,6 +12,7 @@ import type { Email, StatusCounts } from "../../bindings/github.com/wiz/sendsmtp
 import { Button } from "@/components/ui/button";
 import { Badge, Input, Label, Textarea } from "@/components/ui/form";
 import { ProgressBar, eventData, type ProgressInfo } from "@/components/ui/progress";
+import { useTranslation } from "@/i18n";
 import { toast } from "sonner";
 
 const PAGE_SIZES = [50, 100, 200] as const;
@@ -24,6 +25,7 @@ function pasteTooLarge(text: string): boolean {
 }
 
 export function EmailsPage() {
+  const { t } = useTranslation();
   const [raw, setRaw] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("all");
   const [query, setQuery] = useState("");
@@ -100,12 +102,12 @@ export function EmailsPage() {
   const importFromFile = useCallback(async () => {
     try {
       const picked = await Dialogs.OpenFile({
-        Title: "Importar lista de emails",
+        Title: t("emails.dialogTitle"),
         CanChooseFiles: true,
         AllowsMultipleSelection: false,
         Filters: [
-          { DisplayName: "Texto", Pattern: "*.txt;*.csv;*.list" },
-          { DisplayName: "Todos", Pattern: "*.*" },
+          { DisplayName: t("emails.filterText"), Pattern: "*.txt;*.csv;*.list" },
+          { DisplayName: t("emails.filterAll"), Pattern: "*.*" },
         ],
       });
       const path = Array.isArray(picked) ? picked[0] : picked;
@@ -115,41 +117,40 @@ export function EmailsPage() {
         job: "emails-import",
         phase: "start",
         percent: 1,
-        message: validate ? "Validando arquivo…" : "Importando arquivo…",
+        message: validate ? t("emails.validatingFile") : t("emails.importingFile"),
       });
       const res = await ImportEmailsFile(path, validate);
       toast.success(
-        `Arquivo: ${res.inserted} inseridos, ${res.skipped} ignorados` +
-          (res.invalid ? `, ${res.invalid} inválidos` : "") +
-          ` · total ${res.total}`
+        t("emails.toast.fileResult", {
+          inserted: res.inserted,
+          skipped: res.skipped,
+          invalid: res.invalid ? t("emails.toast.invalidPart", { n: res.invalid }) : "",
+          total: res.total,
+        })
       );
       setPage(0);
       await refresh();
     } catch (e: any) {
       const msg = String(e?.message ?? e);
       toast.error(
-        msg.includes("JSON") || msg.includes("runtime call")
-          ? "Falha no diálogo/IPC — reinicie o app (task dev) e tente Importar arquivo de novo"
-          : msg
+        msg.includes("JSON") || msg.includes("runtime call") ? t("emails.toast.ipcFail") : msg
       );
     } finally {
       setBusy(false);
       setProgress(null);
     }
-  }, [validate, refresh]);
+  }, [validate, refresh, t]);
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <header>
-        <h1 className="font-[family-name:var(--font-display)] text-3xl">Emails</h1>
-        <p className="mt-1 text-stone-500">Lista de destinatários e fila — um endereço único por mailbox</p>
+        <h1 className="font-[family-name:var(--font-display)] text-3xl">{t("emails.title")}</h1>
+        <p className="mt-1 text-stone-500">{t("emails.subtitle")}</p>
       </header>
 
       <section className="space-y-3">
-        <Label>Importar (1 por linha)</Label>
-        <p className="text-xs text-stone-500">
-          Listas grandes: use Importar arquivo (só o caminho passa pelo IPC). Colar &gt;~400KB quebra o runtime.
-        </p>
+        <Label>{t("emails.importLabel")}</Label>
+        <p className="text-xs text-stone-500">{t("emails.importHint")}</p>
         <Textarea
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
@@ -164,7 +165,7 @@ export function EmailsPage() {
             disabled={busy}
             onChange={(e) => setValidate(e.target.checked)}
           />
-          Validar (sintaxe + MX real + bloqueia descartáveis) — inválidos e duplicados não entram
+          {t("emails.validate")}
         </label>
         <ProgressBar info={busy ? progress : null} />
         <div className="flex flex-wrap gap-2">
@@ -172,7 +173,7 @@ export function EmailsPage() {
             disabled={busy || !raw.trim()}
             onClick={async () => {
               if (pasteTooLarge(raw)) {
-                toast.error("Lista grande demais para colar — use Importar arquivo");
+                toast.error(t("emails.toast.pasteTooLarge"));
                 void importFromFile();
                 return;
               }
@@ -181,14 +182,17 @@ export function EmailsPage() {
                 job: "emails-import",
                 phase: "start",
                 percent: 1,
-                message: validate ? "Iniciando validação…" : "Importando…",
+                message: validate ? t("emails.validating") : t("emails.importingShort"),
               });
               try {
                 const res = await ImportEmailsText(raw, validate);
                 toast.success(
-                  `${res.inserted} inseridos, ${res.skipped} ignorados (já existiam / dup)` +
-                    (res.invalid ? `, ${res.invalid} inválidos` : "") +
-                    ` · total ${res.total}`
+                  t("emails.toast.pasteResult", {
+                    inserted: res.inserted,
+                    skipped: res.skipped,
+                    invalid: res.invalid ? t("emails.toast.invalidPart", { n: res.invalid }) : "",
+                    total: res.total,
+                  })
                 );
                 setRaw("");
                 setPage(0);
@@ -196,7 +200,7 @@ export function EmailsPage() {
               } catch (e: any) {
                 const msg = String(e?.message ?? e);
                 if (msg.includes("JSON") || msg.includes("runtime call")) {
-                  toast.error("Paste grande demais para o IPC — use Importar arquivo");
+                  toast.error(t("emails.toast.ipcPaste"));
                   void importFromFile();
                 } else {
                   toast.error(msg);
@@ -207,10 +211,10 @@ export function EmailsPage() {
               }
             }}
           >
-            {busy ? "Importando…" : "Importar"}
+            {busy ? t("emails.importing") : t("emails.import")}
           </Button>
           <Button variant="secondary" disabled={busy} onClick={() => void importFromFile()}>
-            Importar arquivo
+            {t("emails.importFile")}
           </Button>
           <Button
             variant="secondary"
@@ -219,7 +223,7 @@ export function EmailsPage() {
               setBusy(true);
               try {
                 const n = await ResetFailed();
-                toast.success(`${n} reenfileirados`);
+                toast.success(t("emails.toast.requeued", { n }));
                 setFilter("pending");
                 setPage(0);
                 await refresh();
@@ -230,19 +234,19 @@ export function EmailsPage() {
               }
             }}
           >
-            Reset failed
+            {t("emails.resetFailed")}
           </Button>
           <Button
             variant="danger"
             disabled={busy}
             onClick={async () => {
-              if (!window.confirm("Apagar TODOS os destinatários da lista? Esta ação não pode ser desfeita.")) {
+              if (!window.confirm(t("emails.confirmDelete"))) {
                 return;
               }
               setBusy(true);
               try {
                 const n = await DeleteAllEmails();
-                toast.success(`${n} emails apagados`);
+                toast.success(t("emails.toast.deleted", { n }));
                 setPage(0);
                 await refresh();
               } catch (e: any) {
@@ -252,7 +256,7 @@ export function EmailsPage() {
               }
             }}
           >
-            Apagar todos
+            {t("emails.deleteAll")}
           </Button>
         </div>
       </section>
@@ -271,7 +275,7 @@ export function EmailsPage() {
                   setPage(0);
                 }}
               >
-                {f}
+                {t(`common.${f}` as "common.all")}
                 {n != null ? ` (${n})` : ""}
               </Button>
             );
@@ -288,11 +292,11 @@ export function EmailsPage() {
           <Input
             value={queryInput}
             onChange={(e) => setQueryInput(e.target.value)}
-            placeholder="Buscar endereço…"
+            placeholder={t("emails.searchPlaceholder")}
             disabled={busy}
           />
           <Button type="submit" size="sm" variant="secondary" disabled={busy}>
-            Buscar
+            {t("common.search")}
           </Button>
         </form>
       </div>
@@ -301,10 +305,10 @@ export function EmailsPage() {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-stone-300 bg-stone-100/80 text-xs uppercase text-stone-500">
             <tr>
-              <th className="px-3 py-2">Email</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Attempts</th>
-              <th className="px-3 py-2">Error</th>
+              <th className="px-3 py-2">{t("common.email")}</th>
+              <th className="px-3 py-2">{t("common.status")}</th>
+              <th className="px-3 py-2">{t("common.attempts")}</th>
+              <th className="px-3 py-2">{t("common.errorCol")}</th>
             </tr>
           </thead>
           <tbody>
@@ -317,7 +321,7 @@ export function EmailsPage() {
                       e.status === "sent" ? "ok" : e.status === "failed" ? "danger" : e.status === "pending" ? "accent" : "warn"
                     }
                   >
-                    {e.status}
+                    {t(`common.${e.status}` as "common.pending")}
                   </Badge>
                 </td>
                 <td className="px-3 py-2">{e.attempts}</td>
@@ -327,7 +331,7 @@ export function EmailsPage() {
             {!list.length && (
               <tr>
                 <td colSpan={4} className="px-3 py-8 text-center text-stone-500">
-                  Nenhum email
+                  {t("emails.empty")}
                 </td>
               </tr>
             )}
@@ -336,11 +340,13 @@ export function EmailsPage() {
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-stone-200 px-3 py-2 text-sm text-stone-600">
           <span>
-            {total === 0 ? "0 resultados" : `${from}–${to} de ${total}`}
+            {total === 0
+              ? t("emails.resultsZero")
+              : t("emails.results", { from, to, total })}
           </span>
           <div className="flex flex-wrap items-center gap-2">
             <label className="flex items-center gap-1.5 text-xs text-stone-500">
-              Por página
+              {t("emails.perPage")}
               <select
                 className="rounded border border-stone-300 bg-white px-1.5 py-1 text-sm"
                 value={pageSize}
@@ -357,7 +363,7 @@ export function EmailsPage() {
               </select>
             </label>
             <Button size="sm" variant="outline" disabled={page <= 0 || busy} onClick={() => setPage((p) => Math.max(0, p - 1))}>
-              Anterior
+              {t("common.prev")}
             </Button>
             <span className="min-w-[4.5rem] text-center text-xs tabular-nums">
               {page + 1}/{pageCount}
@@ -368,7 +374,7 @@ export function EmailsPage() {
               disabled={page + 1 >= pageCount || busy}
               onClick={() => setPage((p) => p + 1)}
             >
-              Próxima
+              {t("common.next")}
             </Button>
           </div>
         </div>

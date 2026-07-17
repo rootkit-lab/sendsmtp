@@ -3,9 +3,11 @@ import { GetConfig, ImportAll, SaveConfig } from "../../bindings/github.com/wiz/
 import type { Config } from "../../bindings/github.com/wiz/sendsmtp/internal/config/models";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
+import { useI18n, type Locale } from "@/i18n";
 import { toast } from "sonner";
 
 export function SettingsPage() {
+  const { t, locale, setLocale, locales } = useI18n();
   const [cfg, setCfg] = useState<Config | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -16,7 +18,7 @@ export function SettingsPage() {
   }, []);
 
   if (!cfg) {
-    return <p className="text-stone-500">Carregando…</p>;
+    return <p className="text-stone-500">{t("common.loading")}</p>;
   }
 
   function num(key: keyof Config, value: string) {
@@ -36,57 +38,69 @@ export function SettingsPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <header>
-        <h1 className="font-[family-name:var(--font-display)] text-3xl">Settings</h1>
-        <p className="mt-1 text-stone-500">Workers, paths e spam test MailReach</p>
+        <h1 className="font-[family-name:var(--font-display)] text-3xl">{t("settings.title")}</h1>
+        <p className="mt-1 text-stone-500">{t("settings.subtitle")}</p>
       </header>
 
+      <section className="space-y-3 rounded-lg border border-stone-300/80 bg-white/60 p-4">
+        <h2 className="text-sm font-semibold text-stone-800">{t("settings.language")}</h2>
+        <p className="text-xs text-stone-500">{t("settings.languageHint")}</p>
+        <div className="flex flex-wrap gap-2">
+          {locales.map((l) => (
+            <Button
+              key={l.id}
+              size="sm"
+              variant={locale === l.id ? "default" : "outline"}
+              onClick={() => setLocale(l.id as Locale)}
+            >
+              {l.label}
+            </Button>
+          ))}
+        </div>
+      </section>
+
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Workers" value={cfg.workers} onChange={(v) => num("workers", v)} />
-        <Field label="SMTP max conn" value={cfg.smtp_max_conn} onChange={(v) => num("smtp_max_conn", v)} />
-        <Field label="Dial timeout (s)" value={cfg.dial_timeout_sec} onChange={(v) => num("dial_timeout_sec", v)} />
-        <Field label="Send timeout (s)" value={cfg.send_timeout_sec} onChange={(v) => num("send_timeout_sec", v)} />
-        <Field label="Retry max" value={cfg.retry_max} onChange={(v) => num("retry_max", v)} />
+        <Field label={t("settings.workers")} value={cfg.workers} onChange={(v) => num("workers", v)} />
+        <Field label={t("settings.smtpMaxConn")} value={cfg.smtp_max_conn} onChange={(v) => num("smtp_max_conn", v)} />
+        <Field label={t("settings.dialTimeout")} value={cfg.dial_timeout_sec} onChange={(v) => num("dial_timeout_sec", v)} />
+        <Field label={t("settings.sendTimeout")} value={cfg.send_timeout_sec} onChange={(v) => num("send_timeout_sec", v)} />
+        <Field label={t("settings.retryMax")} value={cfg.retry_max} onChange={(v) => num("retry_max", v)} />
         <Field
-          label="Disable SMTP after fails"
+          label={t("settings.disableAfter")}
           value={cfg.smtp_disable_after_fails}
           onChange={(v) => num("smtp_disable_after_fails", v)}
         />
         <div className="sm:col-span-2">
-          <Label>From name</Label>
+          <Label>{t("settings.fromName")}</Label>
           <Input value={cfg.from_name || ""} onChange={(e) => setCfg({ ...cfg, from_name: e.target.value })} />
         </div>
         <div className="sm:col-span-2">
-          <Label>Database</Label>
+          <Label>{t("settings.database")}</Label>
           <Input value={cfg.database} onChange={(e) => setCfg({ ...cfg, database: e.target.value })} />
         </div>
       </div>
 
       <section className="space-y-3 rounded-lg border border-stone-300/80 bg-white/60 p-4">
-        <h2 className="text-sm font-semibold text-stone-800">Inbox check (MailReach free)</h2>
+        <h2 className="text-sm font-semibold text-stone-800">{t("settings.inboxTitle")}</h2>
         <p className="text-xs text-stone-500">
-          Usa o{" "}
+          {t("settings.inboxBody")}{" "}
           <a
             className="underline"
             href="https://www.mailreach.co/email-spam-test"
             target="_blank"
             rel="noreferrer"
           >
-            spam test gratuito do MailReach
+            {t("settings.inboxLink")}
           </a>
-          : cria o teste, envia o HTML da campanha (+ código) para ~28 seeds deles e faz poll do score.
-          Limite free ≈ 3 testes / 24h. Playwright só entra se a API HTTP for bloqueada — setup:{" "}
-          <code className="rounded bg-stone-100 px-1">
-            cd scripts/inbox-check && npm i && npx playwright install chromium
-          </code>
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field
-            label="Wait after send (s)"
+            label={t("settings.waitAfter")}
             value={cfg.inbox_check?.wait_sec || 60}
             onChange={(v) => inboxNum("wait_sec", v)}
           />
           <Field
-            label="Poll timeout (s)"
+            label={t("settings.pollTimeout")}
             value={cfg.inbox_check?.timeout_sec || 240}
             onChange={(v) => inboxNum("timeout_sec", v)}
           />
@@ -105,14 +119,14 @@ export function SettingsPage() {
               })
             }
           />
-          Headless browser (fallback Playwright)
+          {t("settings.headless")}
         </label>
       </section>
 
       <div className="grid gap-3 sm:grid-cols-2">
         {(["smtps", "emails", "subjects", "links", "html"] as const).map((k) => (
           <div key={k}>
-            <Label>Path {k}</Label>
+            <Label>{t("settings.path", { key: k })}</Label>
             <Input
               value={(cfg.paths as any)?.[k] || ""}
               onChange={(e) =>
@@ -133,7 +147,7 @@ export function SettingsPage() {
             setBusy(true);
             try {
               await SaveConfig(cfg);
-              toast.success("Config salva");
+              toast.success(t("settings.saved"));
             } catch (e: any) {
               toast.error(String(e?.message ?? e));
             } finally {
@@ -141,7 +155,7 @@ export function SettingsPage() {
             }
           }}
         >
-          Salvar config
+          {t("settings.save")}
         </Button>
         <Button
           variant="secondary"
@@ -150,7 +164,8 @@ export function SettingsPage() {
             setBusy(true);
             try {
               const res = await ImportAll();
-              toast.success(`Import all: ${Object.keys(res || {}).join(", ") || "nada"}`);
+              const keys = Object.keys(res || {}).join(", ") || t("settings.importAllEmpty");
+              toast.success(t("settings.importAllResult", { keys }));
             } catch (e: any) {
               toast.error(String(e?.message ?? e));
             } finally {
@@ -158,7 +173,7 @@ export function SettingsPage() {
             }
           }}
         >
-          Import all (arquivos)
+          {t("settings.importAll")}
         </Button>
       </div>
     </div>

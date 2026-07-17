@@ -25,6 +25,7 @@ go test ./internal/...
 - Prefer small, focused commits.
 - Match existing Go/React style; avoid drive-by refactors.
 - Docs and user-facing project markdown are in **English**.
+- UI strings must use i18n (`t("key")`); add keys to both `en.ts` and `pt.ts`. See `.cursor/skills/sendsmtp-i18n`.
 
 ## Pull requests
 

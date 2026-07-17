@@ -10,6 +10,7 @@ import {
 } from "../../bindings/github.com/wiz/sendsmtp/appservice";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/form";
+import { useTranslation } from "@/i18n";
 import { toast } from "sonner";
 
 function firstLine(text: string, fallback: string) {
@@ -71,8 +72,8 @@ function uniq() {
   return Math.random().toString(16).slice(2, 10);
 }
 
-function applyPreview(html: string, subjects: string, links: string) {
-  const assuntoRaw = firstLine(subjects, "Assunto demo");
+function applyPreview(html: string, subjects: string, links: string, demoSubject: string) {
+  const assuntoRaw = firstLine(subjects, demoSubject);
   const linkBase = firstLine(links, "https://example.com");
   const email = "demo@example.com";
   const link = personalizeLink(linkBase, email);
@@ -134,6 +135,7 @@ const monacoOpts = {
 };
 
 export function ContentPage() {
+  const { t } = useTranslation();
   const [subjects, setSubjects] = useState("");
   const [links, setLinks] = useState("");
   const [html, setHtml] = useState("");
@@ -156,7 +158,12 @@ export function ContentPage() {
     })();
   }, []);
 
-  const preview = useMemo(() => applyPreview(html, subjects, links), [html, subjects, links, spinKey]);
+  const demoSubject = t("content.demoSubject");
+  const previewEmpty = t("content.previewEmpty");
+  const preview = useMemo(
+    () => applyPreview(html, subjects, links, demoSubject),
+    [html, subjects, links, spinKey, demoSubject]
+  );
   const previewHtml = preview.html;
   const previewSubject = preview.subject;
 
@@ -166,7 +173,7 @@ export function ContentPage() {
       await ImportSubjectsText(subjects);
       await ImportLinksText(links);
       await SetHtml(html);
-      toast.success("Conteúdo salvo");
+      toast.success(t("content.saved"));
     } catch (e: any) {
       toast.error(String(e?.message ?? e));
     } finally {
@@ -175,32 +182,29 @@ export function ContentPage() {
   }
 
   if (!loaded) {
-    return <p className="text-stone-500">Carregando conteúdo…</p>;
+    return <p className="text-stone-500">{t("content.loading")}</p>;
   }
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl">Conteúdo</h1>
-          <p className="mt-1 text-stone-500">
-            Monaco + preview · {"{{email}}"} {"{{link}}"} {"{{assunto}}"} {"{{from}}"} {"{{uniq}}"} · spintax{" "}
-            {"{a|b|c}"} (precisa de |)
-          </p>
+          <h1 className="font-[family-name:var(--font-display)] text-3xl">{t("content.title")}</h1>
+          <p className="mt-1 text-stone-500">{t("content.subtitle")}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" disabled={busy} onClick={() => setSpinKey((k) => k + 1)}>
-            Re-spin preview
+            {t("content.respin")}
           </Button>
           <Button disabled={busy} onClick={save}>
-            Salvar
+            {t("content.save")}
           </Button>
         </div>
       </header>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <Label>Assuntos (1 por linha)</Label>
+          <Label>{t("content.subjects")}</Label>
           <div className="mt-1 overflow-hidden rounded-md border border-stone-300">
             <Editor
               height="160px"
@@ -213,7 +217,7 @@ export function ContentPage() {
           </div>
         </div>
         <div>
-          <Label>Links (1 por linha)</Label>
+          <Label>{t("content.links")}</Label>
           <div className="mt-1 overflow-hidden rounded-md border border-stone-300">
             <Editor
               height="160px"
@@ -229,7 +233,7 @@ export function ContentPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="min-w-0">
-          <Label>HTML (Monaco)</Label>
+          <Label>{t("content.html")}</Label>
           <div className="mt-1 overflow-hidden rounded-md border border-stone-300">
             <Editor
               height="420px"
@@ -247,23 +251,23 @@ export function ContentPage() {
         </div>
 
         <div className="min-w-0">
-          <Label>Preview realtime</Label>
+          <Label>{t("content.preview")}</Label>
           <div className="mt-1 overflow-hidden rounded-md border border-stone-300 bg-white">
             <div className="border-b border-stone-200 bg-stone-50 px-3 py-2">
-              <p className="truncate text-xs text-stone-500">Assunto</p>
+              <p className="truncate text-xs text-stone-500">{t("content.subjectLabel")}</p>
               <p className="truncate text-sm font-medium text-stone-900">{previewSubject}</p>
             </div>
             <iframe
               title="email-preview"
               className="h-[380px] w-full bg-white"
               sandbox=""
-              srcDoc={previewHtml || "<p style='padding:16px;color:#78716c'>Digite HTML para ver o preview…</p>"}
+              srcDoc={
+                previewHtml ||
+                `<p style='padding:16px;color:#78716c'>${previewEmpty.replace(/</g, "&lt;")}</p>`
+              }
             />
           </div>
-          <p className="mt-2 text-xs text-stone-500">
-            Spintax {"{a|b|c}"} exige pipe. {"{{link}}"} no envio vira base/?p=email. From opcional:{" "}
-            {"<span data-from>{{from}}</span>"}. Preview usa 1º assunto/link.
-          </p>
+          <p className="mt-2 text-xs text-stone-500">{t("content.previewHint")}</p>
         </div>
       </div>
     </div>

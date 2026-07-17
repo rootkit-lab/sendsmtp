@@ -12,6 +12,7 @@ import {
 import type { Stats } from "../../bindings/github.com/wiz/sendsmtp/internal/engine/models";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/form";
+import { useTranslation } from "@/i18n";
 import { toast } from "sonner";
 import {
   Area,
@@ -39,6 +40,7 @@ type Progress = {
 const PIE_COLORS = ["#0f766e", "#a16207", "#b91c1c"];
 
 export function DashboardPage() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<Stats | null>(null);
   const [live, setLive] = useState<Progress>({});
   const [busy, setBusy] = useState(false);
@@ -64,8 +66,7 @@ export function DashboardPage() {
 
   useEffect(() => {
     refresh();
-    // Live counts come from campaign:progress; avoid hammering SQLite every 1.5s.
-    const t = setInterval(refresh, 5000);
+    const timer = setInterval(refresh, 5000);
     const offProgress = Events.On("campaign:progress", (ev: any) => {
       const data = Array.isArray(ev?.data) ? ev.data[0] : ev?.data ?? ev;
       setLive(data || {});
@@ -84,15 +85,15 @@ export function DashboardPage() {
       }
     });
     const offDone = Events.On("campaign:done", () => {
-      toast.success("Campanha concluída");
+      toast.success(t("dash.toast.done"));
       refresh();
     });
     return () => {
-      clearInterval(t);
+      clearInterval(timer);
       offProgress?.();
       offDone?.();
     };
-  }, [refresh]);
+  }, [refresh, t]);
 
   const status = stats?.status;
   const pending = live.pending ?? status?.pending ?? 0;
@@ -104,11 +105,11 @@ export function DashboardPage() {
 
   const pieData = useMemo(
     () => [
-      { name: "Sent", value: sent },
-      { name: "Pending", value: pending },
-      { name: "Failed", value: failed },
+      { name: t("dash.sent"), value: sent },
+      { name: t("dash.pending"), value: pending },
+      { name: t("dash.failed"), value: failed },
     ],
-    [sent, pending, failed]
+    [sent, pending, failed, t]
   );
 
   const smtpBars = useMemo(
@@ -139,28 +140,36 @@ export function DashboardPage() {
     <div className="mx-auto max-w-6xl space-y-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">Dashboard</h1>
-          <p className="mt-1 text-stone-500">Throughput ao vivo, saúde dos SMTPs e controle da fila</p>
+          <h1 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">{t("dash.title")}</h1>
+          <p className="mt-1 text-stone-500">{t("dash.subtitle")}</p>
         </div>
         <Badge tone={state === "running" ? "ok" : state === "paused" ? "warn" : "neutral"}>{state}</Badge>
       </header>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Metric label="Pending" value={pending} />
-        <Metric label="Sent" value={sent} />
-        <Metric label="Failed" value={failed} />
-        <Metric label="Rate" value={`${Number(rate).toFixed(1)}/s`} />
+        <Metric label={t("dash.pending")} value={pending} />
+        <Metric label={t("dash.sent")} value={sent} />
+        <Metric label={t("dash.failed")} value={failed} />
+        <Metric label={t("dash.rate")} value={`${Number(rate).toFixed(1)}/s`} />
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button disabled={busy || running} onClick={() => run(StartCampaign, "Campanha iniciada")}>
-          Start
+        <Button disabled={busy || running} onClick={() => run(StartCampaign, t("dash.toast.started"))}>
+          {t("dash.start")}
         </Button>
-        <Button variant="secondary" disabled={busy || !running} onClick={() => run(PauseCampaign, "Pausado")}>
-          Pause
+        <Button
+          variant="secondary"
+          disabled={busy || !running}
+          onClick={() => run(PauseCampaign, t("dash.toast.paused"))}
+        >
+          {t("dash.pause")}
         </Button>
-        <Button variant="outline" disabled={busy || running} onClick={() => run(ResumeCampaign, "Retomado")}>
-          Resume
+        <Button
+          variant="outline"
+          disabled={busy || running}
+          onClick={() => run(ResumeCampaign, t("dash.toast.resumed"))}
+        >
+          {t("dash.resume")}
         </Button>
       </div>
 
@@ -172,33 +181,33 @@ export function DashboardPage() {
           onClick={() =>
             run(async () => {
               const n = await ResetFailed();
-              if (!n) throw new Error("Nenhum failed para resetar");
-            }, "Failed reenfileirados")
+              if (!n) throw new Error(t("dash.toast.noFailed"));
+            }, t("dash.toast.resetFailed"))
           }
         >
-          Reset failed
+          {t("dash.resetFailed")}
         </Button>
         <Button
           size="sm"
           variant="outline"
           disabled={busy}
-          onClick={() => run(async () => { await ReenableSMTPs(); }, "SMTPs reativados")}
+          onClick={() => run(async () => { await ReenableSMTPs(); }, t("dash.toast.smtpsReenabled"))}
         >
-          Reativar SMTPs
+          {t("dash.reenableSmtps")}
         </Button>
         <Button
           size="sm"
           variant="ghost"
           disabled={busy}
-          onClick={() => run(async () => { await ClearErrorLogs(); }, "Logs limpos")}
+          onClick={() => run(async () => { await ClearErrorLogs(); }, t("dash.toast.logsCleared"))}
         >
-          Limpar logs
+          {t("dash.clearLogs")}
         </Button>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="rounded-lg border border-stone-300/80 bg-white/70 p-4">
-          <h2 className="mb-3 text-sm font-semibold text-stone-800">Fila</h2>
+          <h2 className="mb-3 text-sm font-semibold text-stone-800">{t("dash.queue")}</h2>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -212,14 +221,20 @@ export function DashboardPage() {
             </ResponsiveContainer>
           </div>
           <div className="mt-1 flex justify-center gap-4 text-xs text-stone-600">
-            <span>Sent {sent}</span>
-            <span>Pending {pending}</span>
-            <span>Failed {failed}</span>
+            <span>
+              {t("dash.sent")} {sent}
+            </span>
+            <span>
+              {t("dash.pending")} {pending}
+            </span>
+            <span>
+              {t("dash.failed")} {failed}
+            </span>
           </div>
         </section>
 
         <section className="rounded-lg border border-stone-300/80 bg-white/70 p-4">
-          <h2 className="mb-3 text-sm font-semibold text-stone-800">Taxa (emails/s)</h2>
+          <h2 className="mb-3 text-sm font-semibold text-stone-800">{t("dash.rateChart")}</h2>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={localRate}>
@@ -235,7 +250,7 @@ export function DashboardPage() {
       </div>
 
       <section className="rounded-lg border border-stone-300/80 bg-white/70 p-4">
-        <h2 className="mb-3 text-sm font-semibold text-stone-800">Envios por SMTP</h2>
+        <h2 className="mb-3 text-sm font-semibold text-stone-800">{t("dash.smtpBars")}</h2>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={smtpBars}>
@@ -249,14 +264,16 @@ export function DashboardPage() {
           </ResponsiveContainer>
         </div>
         <p className="mt-2 text-sm text-stone-600">
-          Ativos: <strong>{status?.smtps_active ?? 0}</strong> · Desabilitados:{" "}
-          <strong>{status?.smtps_disabled ?? 0}</strong>
+          {t("dash.activeDisabled", {
+            active: status?.smtps_active ?? 0,
+            disabled: status?.smtps_disabled ?? 0,
+          })}
         </p>
       </section>
 
       {stats?.top_errors?.length ? (
         <section className="rounded-lg border border-stone-300/80 bg-white/60 p-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-500">Top erros</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-500">{t("dash.topErrors")}</h3>
           <div className="mt-2 space-y-1">
             {stats.top_errors.map((e) => (
               <p key={e} className="font-mono text-xs text-red-800">
