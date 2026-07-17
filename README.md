@@ -26,8 +26,6 @@ The UI (`app.go`) and CLI (`cmd/sendsmtp`) share the same packages under `intern
 
 ## Install (release)
 
-### Windows / one-shot `.deb`
-
 Download from [Releases](https://github.com/rootkit-lab/sendsmtp/releases):
 
 | Platform | Asset |
@@ -36,36 +34,14 @@ Download from [Releases](https://github.com/rootkit-lab/sendsmtp/releases):
 | Windows | `sendsmtp_*_amd64.msi` |
 
 ```bash
-# Debian / Ubuntu (local file)
+# Debian / Ubuntu
 sudo apt install ./sendsmtp_*_amd64.deb
 
 # Windows — double-click the .msi, or:
 msiexec /i sendsmtp_*_amd64.msi
 ```
 
-### Linux via APT (signed — Cloudsmith)
-
-After the Cloudsmith open-source repo is configured (see below), users install with:
-
-```bash
-curl -sLf 'https://dl.cloudsmith.io/public/rootkit-lab/sendsmtp/cfg/setup/bash.deb.sh' | sudo bash
-sudo apt update
-sudo apt install sendsmtp
-```
-
-The setup script installs Cloudsmith’s **GPG-signed** APT source. Package metadata is signed by Cloudsmith; you do not manage GPG keys yourself.
-
-Tagged releases build `.deb` + `.msi` and (when `CLOUDSMITH_API_KEY` is set) push the `.deb` to Cloudsmith.
-
-#### Maintainer setup (one time)
-
-1. Create a free account at [cloudsmith.com](https://cloudsmith.com) and a **public open-source** Debian repository named `sendsmtp` under namespace `rootkit-lab` (or set GitHub Actions variables `CLOUDSMITH_OWNER` / `CLOUDSMITH_REPO`).
-2. Create an API key (Cloudsmith → API Keys) with push permission.
-3. In the GitHub repo: **Settings → Secrets and variables → Actions** → secret `CLOUDSMITH_API_KEY`.
-4. Push a tag `v*` (or re-run the Release workflow) — the `.deb` is published automatically.
-5. Attribute Cloudsmith hosting in docs (required by their [OSS policy](https://docs.cloudsmith.com/open-source-hosting-policy)).
-
-APT packages for SendSMTP are hosted by [Cloudsmith](https://cloudsmith.com).
+Tagged releases build `.deb` + `.msi` via GitHub Actions (`.github/workflows/release.yml`).
 
 ## Quick start (from source)
 
