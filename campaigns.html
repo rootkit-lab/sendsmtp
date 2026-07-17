@@ -4,11 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Campaign examples — SendSMTP</title>
-  <meta name="description" content="Example subjects and HTML messages for payment confirmations and invoices in pt-BR, pt-PT, es-AR, es-ES, and more." />
+  <meta name="description" content="Interactive payment and invoice email templates for pt-BR, pt-PT, es-AR, es-ES, and more." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/site.css" />
+  <link rel="stylesheet" href="assets/campaigns.css" />
 </head>
 <body>
   <div class="wrap">
@@ -29,315 +30,94 @@
       </nav>
     </header>
 
-    <div class="layout">
+    <div class="layout layout-camp">
       <aside class="side">
         <h2 data-i18n="side.onthis">On this page</h2>
+        <a href="#gallery">Gallery</a>
         <a href="#howto">How to use</a>
-        <a href="#pt-BR">Português (Brasil)</a>
-        <a href="#pt-PT">Português (Portugal)</a>
-        <a href="#es-AR">Español (Argentina)</a>
-        <a href="#es-ES">Español (España)</a>
-        <a href="#es-MX">Español (México)</a>
-        <a href="#en-US">English (US)</a>
-        <a href="#it-IT">Italiano</a>
-        <a href="#fr-FR">Français</a>
         <h2 style="margin-top:1.5rem" data-i18n="side.pages">Docs</h2>
         <a href="guide.html">Guide</a>
         <a href="install.html">Install</a>
+        <a href="https://github.com/rootkit-lab/sendsmtp/tree/main/website/examples">examples/</a>
       </aside>
 
       <article class="main">
-        <h1>Campaign examples</h1>
-        <p>
-          Subjects and HTML snippets for <strong>payment confirmations</strong> and
-          <strong>invoices / notas fiscais</strong>. Placeholders:
-          <code>{{email}}</code>, <code>{{link}}</code>, <code>{{assunto}}</code>,
-          <code>{{from}}</code>, <code>{{uniq}}</code>. Spintax uses <code>{a|b|c}</code>.
-        </p>
-
-        <div class="locale-bar">
-          <a href="#pt-BR">pt-BR</a>
-          <a href="#pt-PT">pt-PT</a>
-          <a href="#es-AR">es-AR</a>
-          <a href="#es-ES">es-ES</a>
-          <a href="#es-MX">es-MX</a>
-          <a href="#en-US">en-US</a>
-          <a href="#it-IT">it-IT</a>
-          <a href="#fr-FR">fr-FR</a>
+        <div class="camp-hero">
+          <h1>Campaign examples</h1>
+          <p>
+            Full HTML templates for <strong>payment confirmations</strong> and
+            <strong>invoices / notas fiscais</strong>, with live preview.
+            Placeholders: <code>{{email}}</code> <code>{{link}}</code>
+            <code>{{assunto}}</code> <code>{{from}}</code> <code>{{uniq}}</code>.
+            Spintax: <code>{a|b|c}</code>.
+          </p>
         </div>
 
-        <h2 id="howto">How to use</h2>
-        <ol>
-          <li>Copy subject lines into <code>data/assuntos.txt</code> (one per line).</li>
-          <li>Copy an HTML body into <code>data/msg.html</code>.</li>
-          <li>Put base URLs in <code>data/links.txt</code> — do <strong>not</strong> add <code>?p=</code>; SendSMTP appends <code>?p=&lt;email&gt;</code> to every <code>{{link}}</code>.</li>
-        </ol>
-        <div class="callout">
-          Ready-to-paste files also live under
-          <a href="https://github.com/rootkit-lab/sendsmtp/tree/main/website/examples"><code>website/examples/</code></a>
-          in the repo.
-        </div>
-
-        <!-- ========== pt-BR ========== -->
-        <section class="locale-block" id="pt-BR">
-          <h3>Português — Brasil (pt-BR)</h3>
-          <p class="locale-meta">Confirmação de pagamento · Nota fiscal eletrônica (NF-e)</p>
-
-          <p class="ex-label">Assuntos — confirmação de pagamento</p>
-          <div class="pre-wrap"><pre>{Pagamento confirmado|Pagamento aprovado|Recebemos seu pagamento} — pedido {{uniq}}
-Seu pagamento foi {confirmado|aprovado} com sucesso
-Comprovante de pagamento disponível
-{Obrigado|Agradecemos}! Pagamento recebido</pre></div>
-
-          <p class="ex-label">Assuntos — nota fiscal</p>
-          <div class="pre-wrap"><pre>{Nota fiscal eletrônica|NF-e|Documento fiscal} disponível
-Sua {NF-e|nota fiscal} já pode ser {baixada|acessada}
-{Nota fiscal|Documento} referente ao seu pedido
-Acesse sua NF-e — {{uniq}}</pre></div>
-
-          <p class="ex-label">Prévia — pagamento</p>
-          <div class="msg-preview">
-            <p class="eyebrow">{Pagamento confirmado|Comprovante disponível}</p>
-            <h4>Pagamento aprovado</h4>
-            <p>Olá, <strong>{{email}}</strong>. Seu pagamento foi processado com sucesso. Guarde este comprovante.</p>
-            <a class="cta" href="#">Ver comprovante</a>
-            <p style="margin-top:1rem;font-size:0.85rem;color:#6b7280">Ref. {{uniq}} · {{from}}</p>
+        <section id="gallery">
+          <div class="camp-controls">
+            <label>
+              Locale / language
+              <select id="camp-locale" aria-label="Locale"></select>
+            </label>
+            <label>
+              Campaign type
+              <div class="type-pills" role="group" aria-label="Campaign type" style="margin:0">
+                <button type="button" data-type="payment" aria-pressed="true">Payment</button>
+                <button type="button" data-type="invoice" aria-pressed="false">Invoice / NF-e</button>
+              </div>
+            </label>
           </div>
-          <div class="pre-wrap"><pre>&lt;!-- data/msg.html · pt-BR pagamento --&gt;
-&lt;p style="margin:0 0 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;font-weight:600"&gt;
-  {Pagamento confirmado|Comprovante disponível}
-&lt;/p&gt;
-&lt;h1 style="margin:0 0 12px;font-size:22px"&gt;Pagamento aprovado&lt;/h1&gt;
-&lt;p&gt;Olá, &lt;strong&gt;{{email}}&lt;/strong&gt;. Seu pagamento foi processado com sucesso.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Ver comprovante&lt;/a&gt;&lt;/p&gt;
-&lt;p style="color:#6b7280;font-size:12px"&gt;Ref. {{uniq}} · &lt;span data-from&gt;{{from}}&lt;/span&gt;&lt;/p&gt;</pre></div>
 
-          <p class="ex-label">Prévia — NF-e</p>
-          <div class="msg-preview">
-            <p class="eyebrow">{Nota fiscal eletrônica|Documento fiscal}</p>
-            <h4>Sua NF-e está pronta</h4>
-            <p>A nota fiscal referente à sua compra já está disponível para download.</p>
-            <a class="cta" href="#">Baixar nota fiscal</a>
+          <div class="camp-meta" id="camp-meta"></div>
+          <h2 id="camp-title" style="margin-top:0;font-size:1.45rem"></h2>
+
+          <div class="camp-actions">
+            <button type="button" class="btn btn-primary" id="btn-copy-html">Copy HTML → msg.html</button>
+            <button type="button" class="btn btn-ghost" id="btn-copy-subjects">Copy subjects → assuntos.txt</button>
+            <button type="button" class="btn btn-ghost" id="btn-download-html">Download .html</button>
           </div>
-          <div class="pre-wrap"><pre>&lt;!-- data/msg.html · pt-BR NF-e --&gt;
-&lt;p style="margin:0 0 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;font-weight:600"&gt;
-  {Nota fiscal eletrônica|Documento fiscal|NF-e disponível}
-&lt;/p&gt;
-&lt;h1 style="margin:0 0 12px;font-size:22px"&gt;Sua NF-e está pronta&lt;/h1&gt;
-&lt;p&gt;Olá, &lt;strong&gt;{{email}}&lt;/strong&gt;. A nota fiscal da sua compra já pode ser acessada.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Baixar nota fiscal&lt;/a&gt;&lt;/p&gt;
-&lt;p style="color:#6b7280;font-size:12px"&gt;Doc. {{uniq}} · &lt;span data-from&gt;{{from}}&lt;/span&gt;&lt;/p&gt;</pre></div>
-        </section>
 
-        <!-- ========== pt-PT ========== -->
-        <section class="locale-block" id="pt-PT">
-          <h3>Português — Portugal (pt-PT)</h3>
-          <p class="locale-meta">Confirmação de pagamento · Fatura / documento fiscal</p>
-
-          <p class="ex-label">Assuntos — pagamento</p>
-          <div class="pre-wrap"><pre>{Pagamento confirmado|Pagamento autorizado} — referência {{uniq}}
-O seu pagamento foi {recebido|confirmado}
-Comprovativo de pagamento disponível
-{Obrigado|Agradecemos} pelo seu pagamento</pre></div>
-
-          <p class="ex-label">Assuntos — fatura</p>
-          <div class="pre-wrap"><pre>{Fatura|Documento fiscal} disponível para descarga
-A sua {fatura|nota} já pode ser {descarregada|consultada}
-Documento fiscal do seu pedido
-Aceda à sua fatura — {{uniq}}</pre></div>
-
-          <div class="pre-wrap"><pre>&lt;!-- pt-PT pagamento --&gt;
-&lt;h1&gt;Pagamento confirmado&lt;/h1&gt;
-&lt;p&gt;Olá, &lt;strong&gt;{{email}}&lt;/strong&gt;. O seu pagamento foi processado com sucesso.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Ver comprovativo&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Ref. {{uniq}} · &lt;span data-from&gt;{{from}}&lt;/span&gt;&lt;/p&gt;
-
-&lt;!-- pt-PT fatura --&gt;
-&lt;h1&gt;A sua fatura está pronta&lt;/h1&gt;
-&lt;p&gt;O documento fiscal da sua compra já se encontra disponível.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Descarregar fatura&lt;/a&gt;&lt;/p&gt;</pre></div>
-        </section>
-
-        <!-- ========== es-AR ========== -->
-        <section class="locale-block" id="es-AR">
-          <h3>Español — Argentina (es-AR)</h3>
-          <p class="locale-meta">Confirmación de pago · Factura / comprobante fiscal</p>
-
-          <p class="ex-label">Asuntos — pago</p>
-          <div class="pre-wrap"><pre>{Pago confirmado|Pago acreditado|Recibimos tu pago} — pedido {{uniq}}
-Tu pago fue {confirmado|acreditado} con éxito
-Comprobante de pago disponible
-{¡Gracias|Te agradecemos}! Pago recibido</pre></div>
-
-          <p class="ex-label">Asuntos — factura</p>
-          <div class="pre-wrap"><pre>{Factura electrónica|Comprobante fiscal} disponible
-Tu {factura|comprobante} ya se puede {descargar|consultar}
-Documento fiscal de tu compra
-Accedé a tu factura — {{uniq}}</pre></div>
-
-          <div class="msg-preview">
-            <p class="eyebrow">{Pago confirmado|Comprobante disponible}</p>
-            <h4>Pago acreditado</h4>
-            <p>Hola, <strong>{{email}}</strong>. Tu pago se procesó correctamente. Guardá este comprobante.</p>
-            <a class="cta" href="#">Ver comprobante</a>
+          <div class="camp-tabs" role="tablist">
+            <button type="button" role="tab" data-tab="preview" aria-selected="true">Preview</button>
+            <button type="button" role="tab" data-tab="subjects" aria-selected="false">Subjects</button>
+            <button type="button" role="tab" data-tab="html" aria-selected="false">HTML source</button>
           </div>
-          <div class="pre-wrap"><pre>&lt;!-- es-AR pago --&gt;
-&lt;h1&gt;Pago acreditado&lt;/h1&gt;
-&lt;p&gt;Hola, &lt;strong&gt;{{email}}&lt;/strong&gt;. Tu pago se procesó correctamente.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Ver comprobante&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Ref. {{uniq}} · &lt;span data-from&gt;{{from}}&lt;/span&gt;&lt;/p&gt;
 
-&lt;!-- es-AR factura --&gt;
-&lt;h1&gt;Tu factura está lista&lt;/h1&gt;
-&lt;p&gt;El comprobante fiscal de tu compra ya está disponible para descargar.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Descargar factura&lt;/a&gt;&lt;/p&gt;</pre></div>
-        </section>
+          <div class="camp-panel" id="panel-preview" role="tabpanel">
+            <div class="preview-frame-wrap">
+              <iframe id="camp-frame" title="Email preview" sandbox=""></iframe>
+            </div>
+            <p style="margin:0.75rem 0 0;font-size:0.85rem;color:var(--muted)">
+              Preview resolves spintax to the first option and fills sample placeholders.
+              Copied HTML keeps <code>{{…}}</code> and <code>{a|b}</code> intact for SendSMTP.
+            </p>
+          </div>
 
-        <!-- ========== es-ES ========== -->
-        <section class="locale-block" id="es-ES">
-          <h3>Español — España (es-ES)</h3>
-          <p class="locale-meta">Confirmación de pago · Factura</p>
+          <div class="camp-panel" id="panel-subjects" role="tabpanel" hidden>
+            <ul class="subject-list" id="camp-subjects"></ul>
+          </div>
 
-          <p class="ex-label">Asuntos — pago</p>
-          <div class="pre-wrap"><pre>{Pago confirmado|Pago recibido} — referencia {{uniq}}
-Su pago se ha {confirmado|procesado} correctamente
-Justificante de pago disponible
-{Gracias|Le agradecemos} por su pago</pre></div>
-
-          <p class="ex-label">Asuntos — factura</p>
-          <div class="pre-wrap"><pre>{Factura|Documento fiscal} disponible para descarga
-Su {factura|documento} ya puede {descargarse|consultarse}
-Factura correspondiente a su pedido
-Acceda a su factura — {{uniq}}</pre></div>
-
-          <div class="pre-wrap"><pre>&lt;!-- es-ES pago --&gt;
-&lt;h1&gt;Pago confirmado&lt;/h1&gt;
-&lt;p&gt;Hola, &lt;strong&gt;{{email}}&lt;/strong&gt;. Su pago se ha procesado correctamente.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Ver justificante&lt;/a&gt;&lt;/p&gt;
-
-&lt;!-- es-ES factura --&gt;
-&lt;h1&gt;Su factura está lista&lt;/h1&gt;
-&lt;p&gt;Ya puede descargar el documento fiscal de su compra.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Descargar factura&lt;/a&gt;&lt;/p&gt;</pre></div>
-        </section>
-
-        <!-- ========== es-MX ========== -->
-        <section class="locale-block" id="es-MX">
-          <h3>Español — México (es-MX)</h3>
-          <p class="locale-meta">Confirmación de pago · CFDI / factura electrónica</p>
-
-          <p class="ex-label">Asuntos — pago</p>
-          <div class="pre-wrap"><pre>{Pago confirmado|Pago recibido} — folio {{uniq}}
-Tu pago fue {confirmado|aplicado} exitosamente
-Comprobante de pago listo
-{¡Gracias|Te agradecemos}! Ya recibimos tu pago</pre></div>
-
-          <p class="ex-label">Asuntos — CFDI</p>
-          <div class="pre-wrap"><pre>{CFDI|Factura electrónica} disponible
-Tu {factura|CFDI} ya se puede {descargar|timbrar/consultar}
-Comprobante fiscal digital de tu compra
-Consulta tu factura — {{uniq}}</pre></div>
-
-          <div class="pre-wrap"><pre>&lt;!-- es-MX pago --&gt;
-&lt;h1&gt;Pago confirmado&lt;/h1&gt;
-&lt;p&gt;Hola, &lt;strong&gt;{{email}}&lt;/strong&gt;. Tu pago se aplicó correctamente.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Ver comprobante&lt;/a&gt;&lt;/p&gt;
-
-&lt;!-- es-MX CFDI --&gt;
-&lt;h1&gt;Tu CFDI está listo&lt;/h1&gt;
-&lt;p&gt;La factura electrónica de tu compra ya está disponible.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Descargar factura&lt;/a&gt;&lt;/p&gt;</pre></div>
-        </section>
-
-        <!-- ========== en-US ========== -->
-        <section class="locale-block" id="en-US">
-          <h3>English — United States (en-US)</h3>
-          <p class="locale-meta">Payment confirmation · Invoice</p>
-
-          <p class="ex-label">Subjects — payment</p>
-          <div class="pre-wrap"><pre>{Payment confirmed|Payment received} — order {{uniq}}
-Your payment was {confirmed|processed} successfully
-Payment receipt available
-{Thank you|Thanks}! We received your payment</pre></div>
-
-          <p class="ex-label">Subjects — invoice</p>
-          <div class="pre-wrap"><pre>{Invoice|Tax invoice} available for download
-Your {invoice|receipt} is ready to {download|view}
-Invoice for your order
-Access your invoice — {{uniq}}</pre></div>
-
-          <div class="pre-wrap"><pre>&lt;!-- en-US payment --&gt;
-&lt;h1&gt;Payment confirmed&lt;/h1&gt;
-&lt;p&gt;Hi &lt;strong&gt;{{email}}&lt;/strong&gt;, your payment was processed successfully.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;View receipt&lt;/a&gt;&lt;/p&gt;
-
-&lt;!-- en-US invoice --&gt;
-&lt;h1&gt;Your invoice is ready&lt;/h1&gt;
-&lt;p&gt;The invoice for your purchase is available to download.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Download invoice&lt;/a&gt;&lt;/p&gt;</pre></div>
-        </section>
-
-        <!-- ========== it-IT ========== -->
-        <section class="locale-block" id="it-IT">
-          <h3>Italiano — Italia (it-IT)</h3>
-          <p class="locale-meta">Conferma di pagamento · Fattura</p>
-
-          <p class="ex-label">Oggetti — pagamento</p>
-          <div class="pre-wrap"><pre>{Pagamento confermato|Pagamento ricevuto} — rif. {{uniq}}
-Il tuo pagamento è stato {confermato|elaborato}
-Ricevuta di pagamento disponibile
-{Grazie|Ti ringraziamo}! Pagamento ricevuto</pre></div>
-
-          <p class="ex-label">Oggetti — fattura</p>
-          <div class="pre-wrap"><pre>{Fattura|Documento fiscale} disponibile
-La tua {fattura|ricevuta} è pronta per il {download|download}
-Documento fiscale del tuo ordine
-Accedi alla fattura — {{uniq}}</pre></div>
-
-          <div class="pre-wrap"><pre>&lt;!-- it-IT pagamento --&gt;
-&lt;h1&gt;Pagamento confermato&lt;/h1&gt;
-&lt;p&gt;Ciao &lt;strong&gt;{{email}}&lt;/strong&gt;, il tuo pagamento è stato elaborato.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Vedi ricevuta&lt;/a&gt;&lt;/p&gt;
-
-&lt;!-- it-IT fattura --&gt;
-&lt;h1&gt;La tua fattura è pronta&lt;/h1&gt;
-&lt;p&gt;Il documento fiscale del tuo acquisto è disponibile.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Scarica fattura&lt;/a&gt;&lt;/p&gt;</pre></div>
-        </section>
-
-        <!-- ========== fr-FR ========== -->
-        <section class="locale-block" id="fr-FR">
-          <h3>Français — France (fr-FR)</h3>
-          <p class="locale-meta">Confirmation de paiement · Facture</p>
-
-          <p class="ex-label">Objets — paiement</p>
-          <div class="pre-wrap"><pre>{Paiement confirmé|Paiement reçu} — réf. {{uniq}}
-Votre paiement a été {confirmé|traité} avec succès
-Reçu de paiement disponible
-{Merci|Nous vous remercions} ! Paiement reçu</pre></div>
-
-          <p class="ex-label">Objets — facture</p>
-          <div class="pre-wrap"><pre>{Facture|Document fiscal} disponible au téléchargement
-Votre {facture|reçu} est prêt à être {téléchargé|consulté}
-Facture relative à votre commande
-Accédez à votre facture — {{uniq}}</pre></div>
-
-          <div class="pre-wrap"><pre>&lt;!-- fr-FR paiement --&gt;
-&lt;h1&gt;Paiement confirmé&lt;/h1&gt;
-&lt;p&gt;Bonjour &lt;strong&gt;{{email}}&lt;/strong&gt;, votre paiement a bien été traité.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Voir le reçu&lt;/a&gt;&lt;/p&gt;
-
-&lt;!-- fr-FR facture --&gt;
-&lt;h1&gt;Votre facture est prête&lt;/h1&gt;
-&lt;p&gt;Le document fiscal de votre achat est disponible.&lt;/p&gt;
-&lt;p&gt;&lt;a href="{{link}}"&gt;Télécharger la facture&lt;/a&gt;&lt;/p&gt;</pre></div>
+          <div class="camp-panel" id="panel-html" role="tabpanel" hidden>
+            <div class="pre-wrap">
+              <pre class="html-view" id="camp-html"></pre>
+            </div>
+          </div>
         </section>
 
         <hr class="rule" />
-        <div class="callout warn">
-          These are <strong>templates for legitimate transactional mail</strong> (receipts and invoices you are authorized to send).
-          Do not use SendSMTP to impersonate banks, governments, or third parties.
-        </div>
+
+        <section id="howto">
+          <h2>How to use</h2>
+          <ol>
+            <li>Pick locale + campaign type, then <strong>Copy subjects</strong> into <code>data/assuntos.txt</code>.</li>
+            <li><strong>Copy HTML</strong> (or download) into <code>data/msg.html</code>.</li>
+            <li>Put base URLs in <code>data/links.txt</code> without <code>?p=</code> — SendSMTP adds <code>?p=&lt;email&gt;</code> to every <code>{{link}}</code>.</li>
+          </ol>
+          <div class="callout warn">
+            Templates for <strong>legitimate transactional mail</strong> you are authorized to send.
+            Do not impersonate banks, governments, or third parties.
+          </div>
+        </section>
       </article>
     </div>
 
@@ -347,5 +127,7 @@ Accédez à votre facture — {{uniq}}</pre></div>
     </footer>
   </div>
   <script src="assets/site.js"></script>
+  <script src="assets/campaigns-data.js"></script>
+  <script src="assets/campaigns.js"></script>
 </body>
 </html>

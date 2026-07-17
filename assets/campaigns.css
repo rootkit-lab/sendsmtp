@@ -1,0 +1,232 @@
+/* Campaign gallery */
+.camp-hero {
+  margin-bottom: 1.5rem;
+}
+
+.camp-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+}
+
+@media (max-width: 640px) {
+  .camp-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+.camp-controls label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.camp-controls select {
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.type-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1.25rem;
+}
+
+.type-pills button {
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.55rem 0.95rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.type-pills button[aria-pressed="true"] {
+  background: var(--ink);
+  color: #f7f5f0;
+  border-color: var(--ink);
+}
+
+.camp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.camp-actions .btn {
+  cursor: pointer;
+  border: 1px solid transparent;
+  font: inherit;
+}
+
+.camp-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--line);
+  margin: 0 0 1rem;
+}
+
+.camp-tabs button {
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.65rem 0.9rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.camp-tabs button[aria-selected="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+.camp-panel[hidden] {
+  display: none !important;
+}
+
+.preview-frame-wrap {
+  background:
+    linear-gradient(90deg, rgba(20, 32, 28, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(20, 32, 28, 0.04) 1px, transparent 1px),
+    #e5e2da;
+  background-size: 16px 16px;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  padding: 1rem;
+  min-height: 28rem;
+}
+
+.preview-frame-wrap iframe {
+  display: block;
+  width: 100%;
+  min-height: 32rem;
+  height: 70vh;
+  max-height: 44rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: #f0f2f5;
+  box-shadow: 0 8px 28px rgba(20, 32, 28, 0.12);
+}
+
+.subject-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.subject-list li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.75rem 0.85rem;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--line);
+  border-radius: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.subject-list li span {
+  flex: 1;
+  word-break: break-word;
+}
+
+.subject-list button {
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.3rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.subject-list button:hover {
+  color: var(--ink);
+}
+
+.html-view {
+  margin: 0;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.camp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.camp-meta strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.toast {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  background: var(--ink);
+  color: #f7f5f0;
+  padding: 0.7rem 1rem;
+  border-radius: 0.4rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: none;
+}
+
+.layout-camp {
+  grid-template-columns: 12rem minmax(0, 1fr);
+}
+
+@media (max-width: 860px) {
+  .layout-camp {
+    grid-template-columns: 1fr;
+  }
+}
