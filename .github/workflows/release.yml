@@ -12,6 +12,11 @@ permissions:
 jobs:
   linux-deb:
     runs-on: ubuntu-24.04
+    env:
+      # Empty when secret unset — used to gate Cloudsmith publish steps
+      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      CLOUDSMITH_OWNER: ${{ vars.CLOUDSMITH_OWNER || 'rootkit-lab' }}
+      CLOUDSMITH_REPO: ${{ vars.CLOUDSMITH_REPO || 'sendsmtp' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -51,6 +56,25 @@ jobs:
           files: bin/*.deb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Signed APT (Cloudsmith OSS). Create a public open-source Deb repo, then
+      # add secret CLOUDSMITH_API_KEY (Settings → Secrets → Actions).
+      - name: Install Cloudsmith CLI
+        if: env.CLOUDSMITH_API_KEY != ''
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.1
+        with:
+          api-key: ${{ env.CLOUDSMITH_API_KEY }}
+
+      - name: Publish .deb to Cloudsmith (signed APT)
+        if: env.CLOUDSMITH_API_KEY != ''
+        run: |
+          set -euo pipefail
+          deb="$(ls -1 bin/*.deb | head -n1)"
+          echo "Pushing $deb → ${CLOUDSMITH_OWNER}/${CLOUDSMITH_REPO}/any-distro/any-version"
+          cloudsmith push deb \
+            "${CLOUDSMITH_OWNER}/${CLOUDSMITH_REPO}/any-distro/any-version" \
+            "$deb" \
+            --wait-for-sync
 
       - uses: actions/upload-artifact@v4
         with:
