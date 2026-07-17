@@ -26,7 +26,9 @@ The UI (`app.go`) and CLI (`cmd/sendsmtp`) share the same packages under `intern
 
 ## Install (release)
 
-Download from [Releases](https://github.com/rootkit-lab/sendsmtp/releases):
+### Download installers
+
+From [Releases](https://github.com/rootkit-lab/sendsmtp/releases):
 
 | Platform | Asset |
 |----------|--------|
@@ -34,14 +36,44 @@ Download from [Releases](https://github.com/rootkit-lab/sendsmtp/releases):
 | Windows | `sendsmtp_*_amd64.msi` |
 
 ```bash
-# Debian / Ubuntu
+# Debian / Ubuntu (local file)
 sudo apt install ./sendsmtp_*_amd64.deb
 
 # Windows — double-click the .msi, or:
 msiexec /i sendsmtp_*_amd64.msi
 ```
 
-Tagged releases build `.deb` + `.msi` via GitHub Actions (`.github/workflows/release.yml`).
+### Linux via APT (signed, GitHub Pages)
+
+On each `v*` tag, CI publishes a **GPG-signed** APT repository to:
+
+https://rootkit-lab.github.io/sendsmtp/
+
+```bash
+curl -fsSL https://rootkit-lab.github.io/sendsmtp/pubkey.gpg \
+  | sudo gpg --dearmor -o /usr/share/keyrings/sendsmtp.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/sendsmtp.gpg arch=amd64] \
+  https://rootkit-lab.github.io/sendsmtp stable main" \
+  | sudo tee /etc/apt/sources.list.d/sendsmtp.list
+
+sudo apt update
+sudo apt install sendsmtp
+```
+
+#### Maintainer setup (one time)
+
+1. Signing key (already generated for this project — public key in `build/apt/`):
+
+```bash
+# If you need to rotate the key:
+./scripts/apt-gen-gpg-key.sh
+gh secret set APT_GPG_PRIVATE_KEY < build/apt/private.asc
+```
+
+2. GitHub → **Settings → Pages** → Source: **Deploy from a branch** → **`gh-pages`** / `/` (root).
+
+3. Push a tag `v*` — the Release workflow builds the `.deb`, signs the APT indexes, and updates `gh-pages`.
 
 ## Quick start (from source)
 

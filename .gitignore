@@ -1,5 +1,8 @@
 bin/
 .task/
+build/apt/private.asc
+build/apt/*.key
+build/apt/*secret*
 frontend/dist/
 frontend/node_modules/
 scripts/inbox-check/node_modules/

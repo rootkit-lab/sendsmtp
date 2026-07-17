@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   linux-deb:
     runs-on: ubuntu-24.04
@@ -57,6 +61,72 @@ jobs:
           name: sendsmtp-linux-deb
           path: bin/*.deb
 
+  apt-repo:
+    needs: linux-deb
+    runs-on: ubuntu-24.04
+    # Publishes a GPG-signed APT tree to the gh-pages branch (GitHub Pages).
+    # Requires secret APT_GPG_PRIVATE_KEY (see scripts/apt-gen-gpg-key.sh).
+    env:
+      APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+      APT_GPG_PASSPHRASE: ${{ secrets.APT_GPG_PASSPHRASE }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip if no signing key
+        id: gate
+        run: |
+          if [ -z "${APT_GPG_PRIVATE_KEY}" ]; then
+            echo "APT_GPG_PRIVATE_KEY not set — skipping APT publish"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install apt tools
+        if: steps.gate.outputs.skip != 'true'
+        run: sudo apt-get update && sudo apt-get install -y apt-utils gnupg dpkg-dev
+
+      - uses: actions/download-artifact@v4
+        if: steps.gate.outputs.skip != 'true'
+        with:
+          name: sendsmtp-linux-deb
+          path: incoming-deb
+
+      - name: Checkout existing gh-pages pool
+        if: steps.gate.outputs.skip != 'true'
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages-old
+
+      - name: Build signed APT repository
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          chmod +x scripts/apt-build-repo.sh
+          mkdir -p apt-out/pool/main
+          if [ -d gh-pages-old/pool/main ]; then
+            cp -f gh-pages-old/pool/main/*.deb apt-out/pool/main/ 2>/dev/null || true
+          fi
+          ./scripts/apt-build-repo.sh incoming-deb apt-out
+          if [ -f build/apt/pubkey.gpg ]; then
+            cp -f build/apt/pubkey.gpg apt-out/pubkey.gpg
+            cp -f build/apt/pubkey.asc apt-out/pubkey.asc
+          fi
+          ls -lahR apt-out | head -80
+
+      - name: Deploy to gh-pages
+        if: steps.gate.outputs.skip != 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: apt-out
+          publish_branch: gh-pages
+          force_orphan: false
+          enable_jekyll: false
+          keep_files: false
+
   windows-msi:
     runs-on: windows-latest
     steps:
@@ -87,10 +157,8 @@ jobs:
         run: |
           export PATH="$HOME/go/bin:/c/Program Files (x86)/WiX Toolset v3.14/bin:/c/Program Files (x86)/NSIS:$PATH"
           wails3 task windows:build ARCH=amd64
-          # MSI via WiX candle/light
           candle -arch x64 -out bin/sendsmtp.wixobj build/windows/msi/sendsmtp.wxs
           light -out bin/sendsmtp-amd64.msi bin/sendsmtp.wixobj
-          # NSIS installer (also useful)
           wails3 task windows:create:nsis:installer ARCH=amd64
           ls -lah bin/
 
