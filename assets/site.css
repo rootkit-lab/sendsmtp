@@ -128,7 +128,7 @@ a:hover {
   color: #f7f5f0;
 }
 
-/* Hero */
+/* Hero (docs pages) */
 .hero {
   padding: 4.5rem 0 3.5rem;
   min-height: min(78vh, 40rem);
@@ -161,6 +161,209 @@ a:hover {
   max-width: 36rem;
   color: var(--muted);
   animation: rise 0.9s ease 0.18s both;
+}
+
+/* Home landing */
+.page-home {
+  --hero-ink: #0c1613;
+}
+
+.page-home .top {
+  padding-bottom: 0.25rem;
+}
+
+.hero-bleed {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.5rem;
+  padding: 2.5rem 0 0;
+  background:
+    radial-gradient(900px 480px at 18% 0%, rgba(11, 122, 106, 0.22), transparent 60%),
+    radial-gradient(700px 420px at 88% 12%, rgba(20, 32, 28, 0.1), transparent 55%),
+    linear-gradient(180deg, rgba(243, 241, 236, 0.2) 0%, rgba(232, 228, 219, 0.95) 100%);
+  overflow: hidden;
+}
+
+.hero-inner {
+  display: grid;
+  gap: 1rem;
+  padding-bottom: 2rem;
+  max-width: 40rem;
+}
+
+.hero-kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  animation: rise 0.8s ease both;
+}
+
+.hero-brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(4rem, 12vw, 7.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  color: var(--hero-ink);
+  animation: rise 0.9s ease 0.05s both;
+}
+
+.hero-bleed .lede {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.4vw, 1.45rem);
+  line-height: 1.35;
+  color: var(--ink);
+  font-weight: 500;
+  max-width: 28rem;
+  animation: rise 0.9s ease 0.12s both;
+}
+
+.hero-bleed .support {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  animation: rise 0.9s ease 0.18s both;
+}
+
+.hero-bleed .cta-row {
+  animation: rise 0.9s ease 0.26s both;
+}
+
+.hero-stage {
+  width: min(100% - 2rem, var(--max));
+  margin: 1.5rem auto 0;
+  padding-bottom: 0;
+  animation: rise 1s ease 0.32s both;
+}
+
+.hero-mail {
+  margin: 0 auto;
+  max-width: 34rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem 0.75rem 0 0;
+  padding: 1.5rem 1.5rem 2rem;
+  box-shadow: 0 -12px 40px rgba(20, 32, 28, 0.08);
+  transform: translateY(0);
+  transition: transform 0.4s ease;
+}
+
+.hero-mail:hover {
+  transform: translateY(-4px);
+}
+
+.hero-mail-bar {
+  height: 4px;
+  width: 100%;
+  margin: 0 0 1.1rem;
+  border-radius: 2px;
+  background: #1d4ed8;
+}
+
+.hero-mail-eye {
+  margin: 0 0 0.5rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.hero-mail-badge {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1d4ed8;
+}
+
+.hero-mail-title {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  letter-spacing: -0.02em;
+  color: #111827;
+}
+
+.hero-mail-body {
+  margin: 0 0 1.15rem;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.hero-mail-cta {
+  display: inline-block;
+  background: #1d4ed8;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 0.45rem;
+}
+
+.home-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 0.5rem;
+}
+
+.home-strip p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+@media (max-width: 720px) {
+  .home-strip {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+}
+
+.home-features {
+  padding: 2.75rem 0 1rem;
+}
+
+.home-features h2 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  letter-spacing: -0.03em;
+}
+
+.home-features-lede {
+  margin: 0 0 0.5rem;
+  max-width: 36rem;
+  color: var(--muted);
+}
+
+.home-cta-band {
+  margin: 2.5rem 0 1rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.home-cta-band h2 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+.home-cta-band p {
+  margin: 0 0 1.1rem;
+  color: var(--muted);
+  max-width: 34rem;
 }
 
 .cta-row {
