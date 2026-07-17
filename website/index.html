@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SendSMTP — Desktop SMTP campaigns</title>
-  <meta name="description" content="SendSMTP: desktop SMTP campaign tool with signed APT installs, SMTP discovery, IMAP extract, and HTML templates." />
+  <title>SendSMTP — Desktop email campaigns</title>
+  <meta name="description" content="SendSMTP is a desktop app for SMTP campaigns: discover servers, import large lists, personalize HTML, and send from your machine." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/site.css" />
 </head>
-<body>
+<body class="page-home">
   <div class="wrap">
     <header class="top">
       <a class="brand" href="index.html">SendSMTP</a>
@@ -28,42 +28,74 @@
         </div>
       </nav>
     </header>
+  </div>
 
-    <section class="hero">
-      <h1 data-i18n="hero.title">SendSMTP</h1>
-      <p class="lede" data-i18n="hero.lede">Desktop SMTP campaigns — Wails, React, and SQLite.</p>
+  <section class="hero-bleed">
+    <div class="wrap hero-inner">
+      <p class="hero-kicker" data-i18n="hero.kicker">Open source · Desktop · MIT</p>
+      <h1 class="hero-brand" data-i18n="hero.title">SendSMTP</h1>
+      <p class="lede" data-i18n="hero.lede">Send transactional email campaigns from your desktop.</p>
       <p class="support" data-i18n="hero.support">
-        Import SMTPs, manage large recipient queues, personalize HTML, and send with a shared Go engine.
+        Discover working SMTPs, import huge recipient lists, personalize every message, and send — all on your machine.
       </p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="install.html" data-i18n="hero.install">Install</a>
-        <a class="btn btn-ghost" href="guide.html" data-i18n="hero.docs">Documentation</a>
-        <a class="btn btn-ghost" href="https://github.com/rootkit-lab/sendsmtp" data-i18n="hero.source">Source</a>
+        <a class="btn btn-primary" href="install.html" data-i18n="hero.install">Get the app</a>
+        <a class="btn btn-ghost" href="campaigns.html" data-i18n="hero.examples">See examples</a>
+        <a class="btn btn-ghost" href="guide.html" data-i18n="hero.docs">Read the guide</a>
       </div>
+    </div>
+
+    <div class="hero-stage" aria-hidden="true">
+      <div class="hero-mail">
+        <div class="hero-mail-bar"></div>
+        <p class="hero-mail-eye">{Nota fiscal eletrônica|Documento fiscal}</p>
+        <p class="hero-mail-badge">Emitida</p>
+        <h2 class="hero-mail-title">Sua nota fiscal está pronta</h2>
+        <p class="hero-mail-body">A NF-e foi emitida e está disponível para download.</p>
+        <div class="hero-mail-cta">Baixar nota fiscal</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section class="home-strip" aria-label="Highlights">
+      <p data-i18n="home.strip1">Signed APT &amp; MSI installs</p>
+      <p data-i18n="home.strip2">Works offline on your PC</p>
+      <p data-i18n="home.strip3">EN &amp; PT interface</p>
     </section>
 
-    <hr class="rule" />
-
-    <section>
-      <h2 style="font-family:var(--font-display);letter-spacing:-0.02em;margin:0 0 0.5rem" data-i18n="home.features">What it does</h2>
+    <section class="home-features">
+      <h2 data-i18n="home.features">Built for real campaigns</h2>
+      <p class="home-features-lede" data-i18n="home.featuresLede">
+        From credential import to personalized HTML — one desktop workflow.
+      </p>
       <ul class="feature-list">
         <li>
-          <strong data-i18n="home.f1t">SMTP discovery</strong>
-          <span data-i18n="home.f1d">email;password or goscan blocks — MX maps to submission hosts and AUTH is verified.</span>
+          <strong data-i18n="home.f1t">Find servers that actually send</strong>
+          <span data-i18n="home.f1d">Paste email;password or goscan blocks. We resolve MX, probe AUTH, and keep only what works.</span>
         </li>
         <li>
-          <strong data-i18n="home.f2t">Large lists</strong>
-          <span data-i18n="home.f2d">File import avoids Wails paste limits. Deduped UNIQUE addresses; optional MX validation.</span>
+          <strong data-i18n="home.f2t">Handle lists of any size</strong>
+          <span data-i18n="home.f2d">Import from file, auto-dedupe addresses, optionally validate MX — without freezing the UI.</span>
         </li>
         <li>
-          <strong data-i18n="home.f3t">IMAP extract</strong>
-          <span data-i18n="home.f3d">Pull contacts and credentials from INBOX/Sent, then queue and import as SMTPs.</span>
+          <strong data-i18n="home.f3t">Grow the queue from IMAP</strong>
+          <span data-i18n="home.f3d">Extract contacts and credentials from INBOX and Sent, then add them to the campaign.</span>
         </li>
         <li>
-          <strong data-i18n="home.f4t">Templates</strong>
-          <span data-i18n="home.f4d">Placeholders, spintax {a|b|c}, and personalized {{link}}?p=&lt;email&gt; at send time.</span>
+          <strong data-i18n="home.f4t">Personalize every send</strong>
+          <span data-i18n="home.f4d">HTML templates, spintax {a|b|c}, and unique {{link}} tracking per recipient.</span>
         </li>
       </ul>
+    </section>
+
+    <section class="home-cta-band">
+      <h2 data-i18n="home.ctaTitle">Start in minutes</h2>
+      <p data-i18n="home.ctaBody">Install from the signed APT repo, grab a Windows MSI, or build from source.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="install.html" data-i18n="hero.install">Get the app</a>
+        <a class="btn btn-ghost" href="https://github.com/rootkit-lab/sendsmtp" data-i18n="hero.source">View source</a>
+      </div>
     </section>
 
     <footer class="footer">
