@@ -26,7 +26,7 @@ The UI (`app.go`) and CLI (`cmd/sendsmtp`) share the same packages under `intern
 
 ## Install (release)
 
-Docs site (install + guide): https://rootkit-lab.github.io/sendsmtp/
+Docs site (install + guide + campaign examples): https://rootkit-lab.github.io/sendsmtp/
 
 ### Download installers
 
