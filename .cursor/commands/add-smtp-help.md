@@ -1,13 +1,13 @@
 Help the user add SMTP accounts for SendSMTP.
 
-## Format A — email;senha (auto-discover)
+## Format A — `email;password` (auto-discover)
 
 ```
-atendimento@creluz.com.br;@Creluz2026
-outro@empresa.com;senha123
+user@company.com;SecretPass
+billing@example.com;AnotherPass
 ```
 
-On import, SendSMTP discovers SMTP host/port (smtp./mail./providers/MX), probes AUTH, and saves working accounts.
+On import, SendSMTP discovers the SMTP host/port (known providers, MX fingerprint, smtp./mail.), probes AUTH, and saves working accounts only.
 
 ## Format B — goscan (explicit host)
 
@@ -24,8 +24,10 @@ password: secret
 ```
 
 Notes:
+
 - Multiple blocks/lines can be in the same paste.
 - `encryption`: `tls` (STARTTLS on 587, implicit TLS on 465), `starttls`, `ssl`, or `none`.
 - `from` and `user` must be real emails — do **not** use `${MAIL_USERNAME}` or similar.
-- After pasting, import via UI button or `./bin/sendsmtp-cli import smtps`.
+- After pasting, import via the UI or `./bin/sendsmtp-cli import smtps`.
 - Never commit real passwords; `data/smtps.txt` is gitignored.
+- Locaweb custom domains typically submit via `email-ssl.com.br` (detected from MX).

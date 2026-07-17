@@ -1,5 +1,5 @@
-# Exemplo — email;senha (discovery) ou goscan.
-# atencimento@creluz.com.br;@Creluz2026
+# Example — email;password (discovery) or goscan.
+# user@example.com;change-me
 
 --- SMTP config (goscan) ---
 domain: example.com

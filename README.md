@@ -1,37 +1,56 @@
 # SendSMTP
 
-App desktop para campanhas SMTP: **Wails v3** + **React/TypeScript** + Tailwind + motor Go + **SQLite**.
+Desktop SMTP campaign tool built with **[Wails v3](https://v3.wails.io/)**, **React/TypeScript**, Tailwind, a shared **Go** engine, and **SQLite**.
 
-UI e CLI compartilham o mesmo engine (`internal/`).
+The UI (`app.go`) and CLI (`cmd/sendsmtp`) share the same packages under `internal/`.
 
-## Requisitos
+## Features
 
-- Go 1.25+
-- Node.js 20+ (frontend)
-- [Wails v3](https://v3.wails.io/) CLI (`wails3`)
-- Linux (WebKitGTK) / demais plataformas conforme Wails
+- Import SMTPs as `email;password` (auto host discovery + AUTH) or goscan blocks
+- MX-based provider detection (Locaweb → `email-ssl.com.br`, Google Workspace, Microsoft 365, …)
+- Large recipient lists via **file import** (avoids Wails IPC paste limits)
+- Optional validation: syntax + real MX + disposable blocklist
+- IMAP contact extract → auto-adds to the email queue; credentials become SMTPs
+- HTML templates with placeholders, spintax `{a|b|c}`, and personalized `{{link}}?p=<email>`
+- Dashboard with cached status counters (scales to large queues)
+- MailReach free inbox/spam placement check
 
-## Setup
+## Requirements
+
+| Tool | Notes |
+|------|--------|
+| Go 1.25+ | Module toolchain may auto-download |
+| Node.js 20+ | Frontend |
+| Wails v3 CLI | `wails3` |
+| Linux / macOS / Windows | Per Wails platform support (Linux needs WebKitGTK) |
+
+## Quick start
 
 ```bash
-go version
+# Frontend deps
 cd frontend && npm install && cd ..
 
 # Dev (hot reload)
 wails3 dev
-# ou
+# or
 task dev
 ```
 
-Build nativo: `task build` (ou o Taskfile da pasta `build/`).
+Production build:
 
-Bindings TypeScript (após mudar `app.go` / métodos públicos):
+```bash
+task build
+# or
+wails3 build
+```
+
+Regenerate TypeScript bindings after changing exported Go methods:
 
 ```bash
 wails3 generate bindings -ts -d frontend/bindings ./...
 ```
 
-## CLI headless
+## CLI
 
 ```bash
 go build -o bin/sendsmtp-cli ./cmd/sendsmtp
@@ -48,33 +67,32 @@ cp data/msg.example.html data/msg.html
 ./bin/sendsmtp-cli import emails --validate
 ```
 
-## Config
+## Configuration
 
-Paths, workers e timeouts: `app.config.yml` (não confundir com `build/config.yml` do packaging Wails).
+Runtime settings live in [`app.config.yml`](app.config.yml) (workers, timeouts, paths).  
+Do not confuse with [`build/config.yml`](build/config.yml) (Wails packaging).
 
-DB SQLite: `data/sendsmtp.db` (gitignored).
+SQLite DB path defaults to `data/sendsmtp.db` (gitignored).
 
-## SMTP
+## SMTP import
 
-### `email;senha` — discovery automático
+### `email;password` — auto discovery
 
 ```
-alberto.santos@empresa.com.br;SenhaAqui
-atendimento@creluz.com.br;@Creluz2026
+user@company.com;SecretPass
+billing@example.com.br;AnotherPass
 ```
 
-Fluxo:
+Flow:
 
-1. Lê domínio do e-mail
-2. Consulta **MX** e mapeia provedor (ex.: Locaweb → `email-ssl.com.br`)
-3. Testa AUTH em 587 STARTTLS / 465 SSL
-4. Salva só o que autenticar
+1. Parse domain from the address
+2. Look up **MX** and map to a submission host when possible (e.g. Locaweb → `email-ssl.com.br`)
+3. Probe AUTH on 587 STARTTLS and 465 SSL
+4. Persist only accounts that authenticate
 
-Provedores conhecidos por domínio de e-mail: Gmail, Outlook/M365, Yahoo, iCloud, Zoho, Proton, Locaweb, etc. Domínios customizados usam fingerprint do MX (Locaweb, Google Workspace, Microsoft 365, KingHost, …).
+Known consumer domains (Gmail, Outlook/M365, Yahoo, iCloud, Zoho, Proton, Locaweb, …) use fixed submission hosts. Custom domains use MX fingerprints. Inbound relays (`mx.*`) are **not** used as submission targets.
 
-Hosts MX de **entrada** (`mx.*`) não são usados como SMTP de envio.
-
-### Goscan (host explícito)
+### Goscan — explicit host
 
 ```
 --- SMTP config (goscan) ---
@@ -88,44 +106,44 @@ user: info@example.com
 password: secret
 ```
 
-`from` / `user` devem ser e-mails reais. `${MAIL_USERNAME}` **não** é expandido — o motor sanitiza e tenta cair no `user` quando for e-mail válido.
+`from` / `user` must be real emails. Values like `${MAIL_USERNAME}` are **not** expanded; the engine sanitizes them and may fall back to `user` when it is a valid address.
 
-## Extrair contatos (IMAP)
+## IMAP contact extract
 
-Na página **SMTPs** → Extrair contatos (um ou todos):
+On the **SMTPs** page → Extract contacts (one or all):
 
-1. Descobre IMAP (hint do host SMTP + `imap.` / `mail.` / Locaweb `email-ssl`)
-2. Lê INBOX + Sent (~150 msgs)
-3. Extrai contatos e pares `email;senha`
-4. Grava em `data/extracted/`
-5. **Importa contatos automaticamente na lista de Emails** (novos + já existentes reportados)
-6. Importa credenciais como SMTPs (com discovery)
+1. Discover IMAP (SMTP host hint + `imap.` / `mail.` / provider hosts such as `email-ssl.com.br`)
+2. Scan INBOX + Sent (~150 messages)
+3. Collect contact addresses and `email;password` pairs from headers/bodies
+4. Write files under `data/extracted/`
+5. **Import contacts into the Emails queue automatically** (reports inserted vs already present)
+6. Import credentials as SMTPs (with discovery)
 
 ## Emails
 
-- Import **sempre** normaliza e deduplica (`UNIQUE(address)` — não reenvia o que já está no DB).
-- Listas grandes (&gt;~10k / paste &gt;~400KB): use **Importar arquivo** (só o caminho passa pelo IPC; colar grande quebra o runtime Wails).
-- **Validar**: sintaxe + **MX real** por domínio + bloqueio de descartáveis; inválidos/duplicados não entram. DNS é paced (não flood).
-- Contadores (`pending` / `sent` / …) em cache (`email_counts`) — dashboard leve mesmo com centenas de milhares de linhas.
-- Listagem: paginação, busca e filtros por status.
+- Import always normalizes and deduplicates (`UNIQUE(address)` — no re-send to addresses already stored)
+- Large lists: use **Import file** (path-only IPC). Huge pastes can break the Wails runtime (~512KB chunk mismatch)
+- **Validate**: syntax + resolvable MX + disposable blocklist; invalid/duplicate lines are skipped. DNS lookups are paced
+- Status counts are cached in `email_counts` for a fast dashboard on large DBs
+- UI: pagination, search, status filters
 
 ## Templates
 
-Arquivos: `data/msg.html`, `data/assuntos.txt` (ver `data/README.md`). Tema exemplo: nota fiscal / NF-e.
+Working files: `data/msg.html`, `data/assuntos.txt` (subjects). See [`data/README.md`](data/README.md).
 
-| Tag | Significado |
-|-----|-------------|
-| `{{email}}` | Destinatário |
-| `{{link}}` | Link da lista + `?p=<email>` no envio (auto) |
-| `{{assunto}}` / `{{subject}}` | Assunto processado |
-| `{{from}}` | From do SMTP (sanitizado) |
-| `{{uniq}}` / `{{id}}` | ID único por envio |
+| Placeholder | Meaning |
+|-------------|---------|
+| `{{email}}` | Recipient |
+| `{{link}}` | Link from the list + `?p=<email>` at send time |
+| `{{assunto}}` / `{{subject}}` | Processed subject line |
+| `{{from}}` | SMTP From (sanitized) |
+| `{{uniq}}` / `{{id}}` | Per-send unique id |
 
-Não coloque `?p=` no HTML ou em `links.txt` — `mailer.PersonalizeLink` faz isso.
+Do not hardcode `?p=` in HTML or `links.txt` — `mailer.PersonalizeLink` adds it.
 
-Spintax: `{a|b|c}` (precisa `|`). `{Status}` sozinho fica literal.
+Spintax: `{a|b|c}` (pipe required). `{Status}` alone stays literal.
 
-Rodapé opcional:
+Optional footer From:
 
 ```html
 <span data-from>{{from}}</span>
@@ -133,40 +151,46 @@ Rodapé opcional:
 
 ## Inbox check (MailReach)
 
-**Check / Analise** (um ou todos) usa o [spam test free do MailReach](https://www.mailreach.co/email-spam-test). Limite free ≈ 3 testes / 24h.
+**Check / Analyze** uses the [MailReach free spam test](https://www.mailreach.co/email-spam-test). Free tier ≈ 3 tests / 24h.
 
 ```bash
 cd scripts/inbox-check && npm i && npx playwright install chromium
 ```
 
-## Estrutura
+## Project layout
 
 ```
-app.go / main.go     # Wails service + entry
-cmd/sendsmtp/        # CLI
+app.go / main.go          Wails service + entrypoint
+cmd/sendsmtp/             Headless CLI
 internal/
-  engine/            # orquestra UI/CLI
-  store/             # SQLite
-  smtpdiscover/      # MX → SMTP + AUTH
-  imapdiscover/      # IMAP
-  imapextract/       # contatos / senhas
-  mailer/            # HTML, spintax, link ?p=
-  emailvalid/        # sintaxe + MX
-  worker/            # campanha
-frontend/            # React UI
-data/                # conteúdo local (secrets gitignored)
+  engine/                 Shared orchestration
+  store/                  SQLite
+  smtpdiscover/           MX → SMTP + AUTH
+  imapdiscover/           IMAP discovery
+  imapextract/            Contacts / passwords
+  mailer/                 HTML, spintax, personalized links
+  emailvalid/             Syntax + MX validation
+  worker/                 Campaign workers
+frontend/                 React UI + generated bindings
+data/                     Local content (secrets gitignored)
+build/                    Wails packaging
 ```
 
-## Segurança / Git
+## Security
 
-**Não commitar:**
+**Never commit:**
 
-- `data/smtps.txt`, `data/emails.txt`, `data/sendsmtp.db*`
-- `data/extracted/` (contatos e senhas)
-- senhas em qualquer arquivo
+- `data/smtps.txt`, `data/emails.txt`
+- `data/sendsmtp.db*`
+- `data/extracted/` (contacts and passwords)
+- Real credentials anywhere in the tree
 
-Use os `*.example.*` no setup.
+Use `data/*.example.*` for setup. See [`.gitignore`](.gitignore).
 
-## Cursor
+## Cursor agent commands
 
-No Agent chat: `/dev` `/build` `/import-all` `/send` `/status` `/test-smtp` `/reset-failed` `/add-smtp-help`
+In Agent chat, type `/` and pick: `dev`, `build`, `import-all`, `send`, `status`, `test-smtp`, `reset-failed`, `add-smtp-help`.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

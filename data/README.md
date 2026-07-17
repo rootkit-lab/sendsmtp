@@ -1,40 +1,41 @@
 # data/
 
-Arquivos de conteúdo e exemplos. Paths reais vêm de `app.config.yml`.
+Local content and examples. Real paths come from `app.config.yml`.
 
-| Arquivo | Uso |
-|---------|-----|
-| `msg.html` | Corpo HTML da campanha (nota fiscal) |
-| `msg.example.html` | Mesmo template (para `cp` no setup) |
-| `assuntos.txt` | Assuntos NF-e (1/linha), spintax + `{{uniq}}` |
-| `links.txt` | URLs (1/linha) |
-| `emails.txt` | Destinatários (1/linha) — listas grandes: UI **Importar arquivo** |
-| `smtps.txt` | Blocos goscan **ou** `email;senha` (**não commitar**) |
-| `sendsmtp.db` | SQLite (**não commitar**) |
-| `extracted/` | Contatos/senhas do IMAP (**não commitar**) |
+| File | Purpose |
+|------|---------|
+| `msg.html` | Campaign HTML body |
+| `msg.example.html` | Same template for setup (`cp`) |
+| `assuntos.txt` | Subject lines (1/line), spintax + `{{uniq}}` |
+| `assuntos.example.txt` | Example subjects |
+| `links.txt` | URLs (1/line) |
+| `emails.txt` | Recipients (1/line) — large lists: UI **Import file** |
+| `smtps.txt` | Goscan blocks **or** `email;password` (**do not commit**) |
+| `sendsmtp.db` | SQLite (**do not commit**) |
+| `extracted/` | IMAP extract output (**do not commit**) |
 
-Validação no import (opcional): sintaxe + MX DNS + bloqueio de descartáveis; inválidos/duplicados não entram.
+Optional import validation: syntax + DNS MX + disposable blocklist; invalid/duplicate addresses are skipped.
 
-Extrair contatos (SMTPs): grava aqui **e** importa automaticamente na lista de Emails.
+**Extract contacts** (SMTPs page): writes under `extracted/` **and** imports into the Emails queue automatically.
 
 ## Placeholders
 
 `{{email}}` `{{link}}` `{{assunto}}` `{{subject}}` `{{from}}` `{{uniq}}` `{{id}}`
 
-No envio, `{{link}}` recebe automaticamente `?p=<destinatário>`:
+On send, `{{link}}` gets `?p=<recipient>`:
 
-`https://exemplo.com/` → `https://exemplo.com/?p=user%40gmail.com`
+`https://example.com/` → `https://example.com/?p=user%40gmail.com`
 
-Não adicione `?p=` no HTML ou em `links.txt` — o motor (`mailer.PersonalizeLink`) faz isso.
+Do not add `?p=` in the HTML or in `links.txt` — `mailer.PersonalizeLink` handles it.
 
 ## Spintax
 
-`{a|b|c}` — obrigatório `|`. `{Status}` sozinho **não** funciona.
+`{a|b|c}` — pipe required. `{Status}` alone does **not** spin.
 
-## From no rodapé
+## From in the footer
 
 ```html
-{Notificação automática|Comprovante automático}<span data-from>{{from}}</span> · {{uniq}}
+{Automatic notice|Auto receipt}<span data-from>{{from}}</span> · {{uniq}}
 ```
 
-Se o From do SMTP for `${MAIL_USERNAME}` ou vazio, o trecho some. Corrija o campo `from:` no goscan para um e-mail real.
+If the SMTP From is `${MAIL_USERNAME}` or empty, that span is omitted. Set `from:` in goscan to a real email address.
