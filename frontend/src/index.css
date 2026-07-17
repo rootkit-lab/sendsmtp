@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-display: "Fraunces", "Georgia", serif;
+  --color-bg: #f6f1e8;
+  --color-bg-2: #ebe3d6;
+  --color-ink: #1c1917;
+  --color-muted: #78716c;
+  --color-accent: #0f766e;
+  --color-accent-2: #115e59;
+  --color-danger: #b91c1c;
+  --color-ok: #15803d;
+  --color-warn: #a16207;
+  --color-panel: #fffdf9;
+  --color-line: #d6d0c5;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: local("Fraunces"), local("Georgia");
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #e7f0ee 0%, transparent 55%),
+    linear-gradient(160deg, var(--color-bg) 0%, var(--color-bg-2) 100%);
+}

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=sendsmtp
+Comment=My Product Description
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/sendsmtp %u
+Terminal=false
+Type=Application
+Icon=sendsmtp
+Categories=Utility;
+StartupWMClass=sendsmtp
+
+ 

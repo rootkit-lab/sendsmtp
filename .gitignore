@@ -1,0 +1,16 @@
+bin/
+.task/
+frontend/dist/
+frontend/node_modules/
+scripts/inbox-check/node_modules/
+data/sendsmtp.db
+data/sendsmtp.db-*
+data/smtps.txt
+data/emails.txt
+data/extracted/
+*.exe
+*.syso
+.DS_Store
+*.log
+.env
+.env.*

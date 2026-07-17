@@ -1,0 +1,12 @@
+# Exemplo — email;senha (discovery) ou goscan.
+# atencimento@creluz.com.br;@Creluz2026
+
+--- SMTP config (goscan) ---
+domain: example.com
+account_label: MAIL/SMTP
+host: mail.example.com
+port: 587
+encryption: tls
+from: info@example.com
+user: info@example.com
+password: change-me

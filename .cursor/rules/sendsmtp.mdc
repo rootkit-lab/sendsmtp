@@ -1,0 +1,26 @@
+---
+description: SendSMTP project conventions (Wails 3, React, SQLite, goscan)
+alwaysApply: true
+---
+
+# SendSMTP
+
+- Desktop: Wails v3 + React/TS + Tailwind (shadcn-style components in `frontend/src/components/ui`).
+- Engine: Go packages under `internal/` shared by UI (`app.go`) and CLI (`cmd/sendsmtp`).
+- Config: `app.config.yml` (not `build/config.yml`, which is Wails packaging).
+- DB: SQLite at path from config (`data/sendsmtp.db`).
+- SMTP import format:
+  - Goscan blocks starting with `--- SMTP config (goscan) ---`.
+  - Or `email;password` lines (e.g. `atendimento@creluz.com.br;@Creluz2026`) → `smtpdiscover` finds host/port and verifies AUTH.
+  - `from` / `user` must be real emails — `${MAIL_USERNAME}` is not expanded; sanitized in `mailer.SanitizeFrom` / `ResolveFrom`.
+- IMAP extract (SMTPs page → Extrair contatos): discovers IMAP, scrapes INBOX/Sent for contacts + `email;senha`, writes `data/extracted/`, imports contacts to queue and creds as SMTPs.
+- Templates: `data/msg.html`, `data/assuntos.txt` (see `data/README.md`).
+- Placeholders: `{{email}}`, `{{link}}`, `{{assunto}}`, `{{subject}}`, `{{from}}`, `{{uniq}}`, `{{id}}`.
+- On send, `{{link}}` is personalized via `mailer.PersonalizeLink` → `base/?p=<email>` (URL-encoded). Do not hardcode `?p=` in templates or `links.txt`.
+- Optional footer From: `<span data-from>{{from}}</span>` (omitted when From empty/unresolved).
+- Spintax: `{a|b|c}` — requires `|`; `{Status}` alone stays literal.
+- Email import: always normalize + dedupe; optional DNS validate is paced (not a DNS flood).
+- Email list: `ListEmailsPage(filter, query, limit, offset)`; UNIQUE address — no re-send to already-stored/sent.
+- Do not commit secrets: `data/smtps.txt`, `data/sendsmtp.db`, passwords.
+- Bindings: regenerate with `wails3 generate bindings -ts -d frontend/bindings ./...`
+- Dev: `wails3 dev` / `task dev`. CLI: `go build -o bin/sendsmtp-cli ./cmd/sendsmtp`.

@@ -1,0 +1,23 @@
+database: data/sendsmtp.db
+workers: 50
+smtp_max_conn: 2
+dial_timeout_sec: 10
+send_timeout_sec: 30
+retry_max: 3
+retry_backoff_sec: 2
+smtp_disable_after_fails: 5
+batch_commit: 100
+from_name: ""
+rate_per_smtp_per_min: 0
+inbox_check:
+  # Free MailReach spam test (https://www.mailreach.co/email-spam-test)
+  # ~3 tests / 24h on free tier. headless only used for Playwright fallback.
+  headless: true
+  wait_sec: 60
+  timeout_sec: 240
+paths:
+  smtps: data/smtps.txt
+  emails: data/emails.txt
+  subjects: data/assuntos.txt
+  links: data/links.txt
+  html: data/msg.html
