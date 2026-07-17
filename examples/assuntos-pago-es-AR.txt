@@ -1,0 +1,6 @@
+# Asuntos — confirmación de pago · es-AR
+
+{Pago confirmado|Pago acreditado|Recibimos tu pago} — pedido {{uniq}}
+Tu pago fue {confirmado|acreditado} con éxito
+Comprobante de pago disponible
+{¡Gracias|Te agradecemos}! Pago recibido

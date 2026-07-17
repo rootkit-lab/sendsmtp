@@ -432,3 +432,97 @@ th {
 .hidden {
   display: none !important;
 }
+
+/* Campaign examples */
+.locale-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.locale-bar a {
+  text-decoration: none;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.55);
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.locale-bar a:hover {
+  color: var(--ink);
+  border-color: rgba(11, 122, 106, 0.35);
+}
+
+.locale-block {
+  scroll-margin-top: 1.25rem;
+  padding: 1.25rem 0 0.5rem;
+  border-top: 1px solid var(--line);
+  margin-top: 1.75rem;
+}
+
+.locale-block h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem;
+}
+
+.locale-meta {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.ex-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 1.25rem 0 0.45rem;
+}
+
+.msg-preview {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  padding: 1rem;
+  margin: 0.5rem 0 1rem;
+  font-size: 0.92rem;
+}
+
+.msg-preview .eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b7280;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.msg-preview h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-family: var(--font-display);
+}
+
+.msg-preview p {
+  margin: 0 0 0.75rem;
+  color: var(--ink);
+}
+
+.msg-preview .cta {
+  display: inline-block;
+  background: var(--accent);
+  color: #f4fffb !important;
+  text-decoration: none;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.4rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+

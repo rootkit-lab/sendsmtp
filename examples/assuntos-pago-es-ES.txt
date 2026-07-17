@@ -1,0 +1,6 @@
+# Asuntos — pago · es-ES
+
+{Pago confirmado|Pago recibido} — referencia {{uniq}}
+Su pago se ha {confirmado|procesado} correctamente
+Justificante de pago disponible
+{Gracias|Le agradecemos} por su pago

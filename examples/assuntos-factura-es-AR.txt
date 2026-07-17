@@ -1,0 +1,6 @@
+# Asuntos — factura · es-AR
+
+{Factura electrónica|Comprobante fiscal} disponible
+Tu {factura|comprobante} ya se puede {descargar|consultar}
+Documento fiscal de tu compra
+Accedé a tu factura — {{uniq}}

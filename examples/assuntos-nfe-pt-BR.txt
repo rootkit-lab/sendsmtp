@@ -1,0 +1,6 @@
+# Assunto lines — nota fiscal · pt-BR
+
+{Nota fiscal eletrônica|NF-e|Documento fiscal} disponível
+Sua {NF-e|nota fiscal} já pode ser {baixada|acessada}
+{Nota fiscal|Documento} referente ao seu pedido
+Acesse sua NF-e — {{uniq}}

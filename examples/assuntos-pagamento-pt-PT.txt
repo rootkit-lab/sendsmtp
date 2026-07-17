@@ -1,0 +1,6 @@
+# Assuntos — pagamento · pt-PT
+
+{Pagamento confirmado|Pagamento autorizado} — referência {{uniq}}
+O seu pagamento foi {recebido|confirmado}
+Comprovativo de pagamento disponível
+{Obrigado|Agradecemos} pelo seu pagamento

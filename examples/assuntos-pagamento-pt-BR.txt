@@ -1,0 +1,7 @@
+# Assunto lines for data/assuntos.txt — one per line, spintax OK
+# Campaign: payment confirmation · Locale: pt-BR
+
+{Pagamento confirmado|Pagamento aprovado|Recebemos seu pagamento} — pedido {{uniq}}
+Seu pagamento foi {confirmado|aprovado} com sucesso
+Comprovante de pagamento disponível
+{Obrigado|Agradecemos}! Pagamento recebido
