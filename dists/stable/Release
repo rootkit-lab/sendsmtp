@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Fri, 24 Jul 2026 14:16:15 +0000
+Date: Fri, 24 Jul 2026 14:35:46 +0000
 Description: SendSMTP APT repository
 Label: SendSMTP
 Origin: SendSMTP
 Suite: stable
 MD5Sum:
- 967eddfa7572719d8684b3e0e1175c6a              177 Release
- 3530670548825511f071f9fcc349b56a             2950 main/binary-amd64/Packages
- 2cb8ee1f68b27d85939f377549da69fc             1104 main/binary-amd64/Packages.gz
+ 3c6958921d06adff1bde287a529a6295              177 Release
+ f286846c5dd5271bd7d2221176a575cd             3688 main/binary-amd64/Packages
+ 7dc0aeb8e43dfa9b94454f40703f7a4f             1290 main/binary-amd64/Packages.gz
 SHA1:
- 18a90315bc2d75dcb502950d41a2e34aee414e35              177 Release
- 15710afd405812b829a2beca602da8f63afe1b3d             2950 main/binary-amd64/Packages
- 94c693ad7a0081c7168d3977f1e62c50d727ae77             1104 main/binary-amd64/Packages.gz
+ 32a542a43af7c92ded058b2bbb34a965029a0b0d              177 Release
+ 3bfe095be85e9e6677dceffa2508f9cdcd516610             3688 main/binary-amd64/Packages
+ fe36f4c4581d609ff264eadb319036e42dc363ed             1290 main/binary-amd64/Packages.gz
 SHA256:
- 13085e268c9904c21f549b16810581577bfdc756d8468626f9822c102ff937de              177 Release
- fde81fe052779fa1d429de29b28de8f98f728a45f212a85869a8b7e2d62f7f64             2950 main/binary-amd64/Packages
- f2b6dd5b84063a104e120eb621f4bbe79c6b05dfb8c784ff44c498fed3b3f173             1104 main/binary-amd64/Packages.gz
+ 74aa82aa8d228e9baa1ec00ef1d9940c6677a775d0b5f6268171ddfa958b3df6              177 Release
+ 3dfa0dc18077096e0009299a9ab3fba1e82b788e04350651bbc4e67ec74eb509             3688 main/binary-amd64/Packages
+ bed75fc614fc8ec536bf13535072c4bd82371cd1c4446c6d6a62e3b3b7febda0             1290 main/binary-amd64/Packages.gz
 SHA512:
- 2e76395b431e7c44d172eca416abc54020dbe63a1cd46a248ccce9e6e810254e85e4347590d0e215f1770e811b6ed931148fbf856177476156b6d4a249a25a90              177 Release
- 214146ca22523e725de79205aa4719a7ad3f09262ae8a0725edb7bcebcb63fa4c15396a7e9e9a737b1c5fcc57b77237e1376a268bc9b48ee846d6befda885a3c             2950 main/binary-amd64/Packages
- 8f008956b54b9f8b25f9f801cbd5671e769933b6964c7b65855f4fa232a6e2400d6063795c3a0a15fedc0ddbae6e749138bd428a464d82d8124bcff3a7a3a0cc             1104 main/binary-amd64/Packages.gz
+ ce84921c2deb41b8373c3e910e59e8c8d7b0e0d9873c37b32b49fbf6938ebffc0c30ec4454cc73e3f061550f1c443bda9ef727d9c171a41f7c6bdbc12579d5c8              177 Release
+ 529b9228a0c56d631d6a0d7231c56b8175003332ff739f437389799843cc3a927ebcdb8402518cce2b458c0e9c8b6d40e64a7ae9fa5f67797829ad6785e11ef9             3688 main/binary-amd64/Packages
+ 6c49303f5934b744907ed813f21b87026b24ba572015766cf81d9db3b27d419869cc8d391e01be7636a7f576def6af06db2aadc83d5f932d8e82d9a8f6869b82             1290 main/binary-amd64/Packages.gz
