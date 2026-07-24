@@ -190,6 +190,7 @@ Working files: `data/msg.html`, `data/assuntos.txt` (subjects). See [`data/READM
 | `{{assunto}}` / `{{subject}}` | Processed subject line |
 | `{{from}}` | SMTP From (sanitized) |
 | `{{uniq}}` / `{{id}}` | Per-send unique id |
+| `{{data}}` / `{{date}}` | Today’s date `DD/MM/YYYY` (America/Sao_Paulo) |
 
 Do not hardcode `?p=` in HTML or `links.txt` — `mailer.PersonalizeLink` adds it.
 

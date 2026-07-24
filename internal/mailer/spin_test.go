@@ -3,6 +3,7 @@ package mailer
 import (
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestSpinBasic(t *testing.T) {
@@ -86,6 +87,24 @@ func TestFromWrapperHiddenWhenEmpty(t *testing.T) {
 	}
 	if strings.Contains(out, " ·  · ") {
 		t.Fatalf("double sep: %s", out)
+	}
+}
+
+func TestDatePlaceholders(t *testing.T) {
+	want := FormatDateBR(time.Now())
+	out := ApplyPlaceholders("emitida em {{data}} / {{date}}", "a@x.com", "https://x", "s", "from@x.com")
+	if !strings.Contains(out, want) {
+		t.Fatalf("missing date %q in %q", want, out)
+	}
+	if strings.Contains(out, "{{data}}") || strings.Contains(out, "{{date}}") {
+		t.Fatalf("unreplaced date placeholder: %q", out)
+	}
+}
+
+func TestFormatDateBR(t *testing.T) {
+	got := FormatDateBR(time.Date(2026, 7, 24, 15, 0, 0, 0, time.UTC))
+	if got != "24/07/2026" {
+		t.Fatalf("got %q", got)
 	}
 }
 

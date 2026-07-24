@@ -1,6 +1,8 @@
-{Nota fiscal|NF-e|Documento fiscal} {disponível|emitida|pronta} — {{uniq}}
-{Sua|A} {nota fiscal|NF-e|nota fiscal eletrônica} {está pronta|foi gerada|já pode ser baixada} {{uniq}}
-{Acesse|Baixe|Abra} {sua nota fiscal|a NF-e|o DANFE} {{uniq}}
-{Nota fiscal eletrônica|NF-e} {autorizada|emitida|disponível} para download {{uniq}}
-{Documento fiscal|Nota fiscal} referente ao seu pedido — {{uniq}}
-{Atualização|Aviso}: {nota fiscal|NF-e} {liberada|pronta para consulta} {{uniq}}
+{NF-e|Nota fiscal eletrônica} {emitida|autorizada} em {{data}} — {{uniq}}
+{Sua|A} {NF-e|nota fiscal} de {{data}} {está pronta|já pode ser baixada}
+{Acesse|Baixe|Consulte} a {NF-e|DANFE} emitida em {{data}}
+Documento fiscal de {{data}} {disponível|liberado} para download
+{Atualização|Aviso} {{data}}: {nota fiscal|NF-e} {pronta|disponível} — {{uniq}}
+{NF-e|Nota fiscal} {{data}} · ref. {{uniq}} · {PDF|DANFE} {disponível|pronto}
+{Comprovante fiscal|Documento fiscal} referente a {{data}} — {{uniq}}
+{Nota fiscal eletrônica|NF-e} {autorizada|emitida} em {{data}} para {{email}}

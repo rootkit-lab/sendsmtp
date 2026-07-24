@@ -1,7 +1,7 @@
 name: "sendsmtp"
 arch: ${GOARCH}
 platform: "linux"
-version: "0.1.0"
+version: "0.1.1"
 section: "mail"
 priority: "optional"
 maintainer: "SendSMTP <noreply@github.com>"

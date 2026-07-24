@@ -20,7 +20,7 @@ Optional import validation: syntax + DNS MX + disposable blocklist; invalid/dupl
 
 ## Placeholders
 
-`{{email}}` `{{link}}` `{{assunto}}` `{{subject}}` `{{from}}` `{{uniq}}` `{{id}}`
+`{{email}}` `{{link}}` `{{assunto}}` `{{subject}}` `{{from}}` `{{uniq}}` `{{id}}` `{{data}}` / `{{date}}` (DD/MM/YYYY, America/Sao_Paulo)
 
 On send, `{{link}}` gets `?p=<recipient>`:
 

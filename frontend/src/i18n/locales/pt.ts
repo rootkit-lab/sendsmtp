@@ -151,7 +151,7 @@ export const pt: Record<MessageKey, string> = {
 
   "content.title": "Conteúdo",
   "content.subtitle":
-    "Monaco + preview · placeholders email, link, assunto, from, uniq · spintax {a|b|c} (precisa de |)",
+    "Monaco + preview · placeholders email, link, assunto, from, uniq, data/date · spintax {a|b|c} (precisa de |)",
   "content.subjects": "Assuntos (1 por linha)",
   "content.links": "Links (1 por linha)",
   "content.html": "HTML (Monaco)",
@@ -163,7 +163,7 @@ export const pt: Record<MessageKey, string> = {
   "content.loading": "Carregando conteúdo…",
   "content.previewEmpty": "Digite HTML para ver o preview…",
   "content.previewHint":
-    "Spintax {a|b|c} exige pipe. link no envio vira base/?p=email. From opcional: <span data-from>from</span>. Preview usa 1º assunto/link.",
+    "Spintax {a|b|c} exige pipe. {{data}}/{{date}} = DD/MM/AAAA. link no envio vira base/?p=email. From opcional: <span data-from>from</span>. Preview usa 1º assunto/link.",
   "content.demoSubject": "Assunto demo",
 
   "settings.title": "Settings",

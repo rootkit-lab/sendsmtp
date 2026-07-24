@@ -6,95 +6,118 @@
   <meta name="x-msg-id" content="{{uniq}}" />
   <title>{{assunto}}</title>
   <!--
-    Nota fiscal · Placeholders: {{email}} {{link}} {{assunto}} {{from}} {{uniq}}
+    NF-e · Placeholders: {{email}} {{link}} {{assunto}} {{from}} {{uniq}} {{data}}/{{date}}
     Spintax: {a|b|c} — precisa de |
-    {{link}} no envio vira base/?p=<email> automaticamente (ex: https://site.com/?p=user%40gmail.com).
+    {{link}} no envio vira base/?p=<email> automaticamente.
     Não coloque ?p= no HTML — o motor adiciona em todos os {{link}}.
   -->
 </head>
-<body style="margin:0;padding:0;background:#f0f2f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;-webkit-font-smoothing:antialiased;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f0f2f5;padding:40px 16px;">
+<body style="margin:0;padding:0;background:#eef1f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#eef1f6;padding:36px 14px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="520" cellspacing="0" cellpadding="0" style="max-width:520px;width:100%;">
+        <table role="presentation" width="560" cellspacing="0" cellpadding="0" style="max-width:560px;width:100%;">
 
-          <!-- Top label -->
           <tr>
-            <td style="padding:0 0 16px;">
-              <p style="margin:0;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#6b7280;font-weight:600;">
-                {Nota fiscal eletrônica|Documento fiscal|NF-e disponível}
-              </p>
+            <td style="padding:0 4px 14px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;font-weight:700;">
+                    {Nota fiscal eletrônica|Documento fiscal · NF-e|SEFAZ · NF-e}
+                  </td>
+                  <td align="right" style="font-size:12px;color:#64748b;font-variant-numeric:tabular-nums;">
+                    {{data}}
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
-          <!-- Card -->
           <tr>
-            <td style="background:#ffffff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;">
+            <td style="background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #dbe3f0;box-shadow:0 8px 24px rgba(15,23,42,0.06);">
 
-              <!-- Accent bar -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td style="height:4px;background:#1d4ed8;font-size:0;line-height:0;">&nbsp;</td>
+                  <td style="height:5px;background:linear-gradient(90deg,#1d4ed8,#2563eb);font-size:0;line-height:0;">&nbsp;</td>
                 </tr>
               </table>
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td style="padding:32px 28px 28px;">
-
-                    <p style="margin:0 0 8px;font-size:12px;color:#1d4ed8;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">
-                      {Emitida|Disponível|Pronta para download}
-                    </p>
-
-                    <h1 style="margin:0 0 12px;font-size:22px;font-weight:650;letter-spacing:-0.025em;line-height:1.25;color:#111827;">
-                      {Sua nota fiscal está pronta|Nota fiscal gerada|Documento fiscal disponível}
-                    </h1>
-
-                    <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#6b7280;">
-                      {A nota fiscal eletrônica foi emitida e está disponível para consulta e download|O documento fiscal referente à sua compra já pode ser acessado|Segue o acesso à NF-e vinculada ao e-mail}
-                      <br />
-                      <span style="display:inline-block;margin-top:6px;color:#111827;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;">{{email}}</span>
-                    </p>
-
-                    <!-- Meta box -->
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 24px;border:1px solid #e5e7eb;border-radius:8px;">
+                  <td style="padding:30px 28px 8px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 14px;">
                       <tr>
-                        <td style="padding:12px 14px;font-size:12px;color:#6b7280;border-bottom:1px solid #e5e7eb;width:42%;">{Tipo|Documento}</td>
-                        <td style="padding:12px 14px;font-size:13px;font-weight:600;color:#111827;text-align:right;border-bottom:1px solid #e5e7eb;">{NF-e|NFS-e|Nota fiscal}</td>
-                      </tr>
-                      <tr>
-                        <td style="padding:12px 14px;font-size:12px;color:#6b7280;border-bottom:1px solid #e5e7eb;">{Número|Nº|Chave}</td>
-                        <td style="padding:12px 14px;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#111827;text-align:right;border-bottom:1px solid #e5e7eb;">{NF|NFE|DOC}-{{uniq}}</td>
-                      </tr>
-                      <tr>
-                        <td style="padding:12px 14px;font-size:12px;color:#6b7280;border-bottom:1px solid #e5e7eb;">{Status|Situação}</td>
-                        <td style="padding:12px 14px;font-size:13px;font-weight:600;color:#15803d;text-align:right;border-bottom:1px solid #e5e7eb;">{Autorizada|Emitida|Válida}</td>
-                      </tr>
-                      <tr>
-                        <td style="padding:12px 14px;font-size:12px;color:#6b7280;">{Formato|Arquivo}</td>
-                        <td style="padding:12px 14px;font-size:13px;color:#111827;text-align:right;">{PDF / XML|PDF|DANFE PDF}</td>
+                        <td style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#047857;">
+                          {Autorizada|Emitida|Disponível}
+                        </td>
                       </tr>
                     </table>
 
-                    <p style="margin:0 0 16px;font-size:13px;line-height:1.5;color:#6b7280;">
-                      {Para visualizar ou baixar a nota|Para abrir o DANFE|Para acessar o documento}, {use o botão abaixo|clique no link a seguir}:
+                    <h1 style="margin:0 0 10px;font-size:23px;font-weight:700;letter-spacing:-0.03em;line-height:1.25;color:#0f172a;">
+                      {Sua NF-e está pronta|Nota fiscal eletrônica disponível|Documento fiscal gerado}
+                    </h1>
+
+                    <p style="margin:0 0 22px;font-size:14px;line-height:1.65;color:#64748b;">
+                      {A nota fiscal eletrônica emitida em|O documento fiscal de}
+                      <strong style="color:#0f172a;">{{data}}</strong>
+                      {já pode ser consultada e baixada|está liberada para download|foi autorizada e está disponível}.
+                      <br />
+                      <span style="display:inline-block;margin-top:10px;padding:6px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;color:#0f172a;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;">{{email}}</span>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:0 28px;">
+                <tr>
+                  <td style="padding:0 0 22px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
+                      <tr>
+                        <td style="padding:12px 14px;font-size:12px;color:#64748b;background:#f8fafc;border-bottom:1px solid #e2e8f0;width:38%;">{Tipo|Documento}</td>
+                        <td style="padding:12px 14px;font-size:13px;font-weight:700;color:#0f172a;text-align:right;background:#f8fafc;border-bottom:1px solid #e2e8f0;">{NF-e|NFS-e|DANFE}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 14px;font-size:12px;color:#64748b;border-bottom:1px solid #e2e8f0;">{Emissão|Data}</td>
+                        <td style="padding:12px 14px;font-size:13px;font-weight:600;color:#0f172a;text-align:right;border-bottom:1px solid #e2e8f0;font-variant-numeric:tabular-nums;">{{data}}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 14px;font-size:12px;color:#64748b;border-bottom:1px solid #e2e8f0;">{Número|Nº|Protocolo}</td>
+                        <td style="padding:12px 14px;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0f172a;text-align:right;border-bottom:1px solid #e2e8f0;">{NF|NFE|DOC}-{{uniq}}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 14px;font-size:12px;color:#64748b;border-bottom:1px solid #e2e8f0;">{Status|Situação}</td>
+                        <td style="padding:12px 14px;font-size:13px;font-weight:700;color:#047857;text-align:right;border-bottom:1px solid #e2e8f0;">{Autorizada|Emitida|Válida}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 14px;font-size:12px;color:#64748b;">{Arquivo|Formato}</td>
+                        <td style="padding:12px 14px;font-size:13px;color:#0f172a;text-align:right;">{PDF / XML|DANFE PDF|PDF}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="padding:0 28px 26px;">
+                    <p style="margin:0 0 14px;font-size:13px;line-height:1.5;color:#64748b;">
+                      {Para visualizar ou baixar a NF-e|Para abrir o DANFE|Para acessar o documento fiscal}, {use o botão abaixo|clique no botão}:
                     </p>
 
-                    <!-- CTA -->
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 18px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 14px;">
                       <tr>
-                        <td align="center" style="background:#1d4ed8;border-radius:8px;">
-                          <a href="{{link}}" style="display:block;padding:14px 22px;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:-0.01em;">
+                        <td align="center" style="background:#1d4ed8;border-radius:9px;">
+                          <a href="{{link}}" style="display:block;padding:15px 22px;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-0.01em;">
                             {Baixar nota fiscal|Abrir NF-e|Ver documento fiscal}
                           </a>
                         </td>
                       </tr>
                     </table>
 
-                    <p style="margin:0;font-size:11px;line-height:1.55;color:#9ca3af;word-break:break-all;text-align:center;">
-                      {Link direto|Acesso alternativo}: <a href="{{link}}" style="color:#6b7280;text-decoration:underline;">{{link}}</a>
+                    <p style="margin:0;font-size:11px;line-height:1.55;color:#94a3b8;word-break:break-all;text-align:center;">
+                      {Link direto|Acesso alternativo}:
+                      <a href="{{link}}" style="color:#64748b;text-decoration:underline;">{{link}}</a>
                     </p>
-                    <!-- {{uniq}} -->
                   </td>
                 </tr>
               </table>
@@ -102,12 +125,11 @@
             </td>
           </tr>
 
-          <!-- Footer -->
           <tr>
-            <td style="padding:22px 8px 0;text-align:center;font-size:11px;line-height:1.65;color:#9ca3af;">
-              {Envio automático de nota fiscal|Documento gerado automaticamente|NF-e · notificação}<span data-from>{{from}}</span> · {{uniq}}<br />
-              {Guarde este e-mail para seus registros fiscais.|Este documento pode ser necessário para declaração e garantia.|Em caso de dúvida, responda a este e-mail.}
-              <br /><span style="color:#d1d5db;">{Se não reconhece esta nota, ignore esta mensagem.|Caso não tenha solicitado, desconsidere.}</span>
+            <td style="padding:20px 10px 0;text-align:center;font-size:11px;line-height:1.7;color:#94a3b8;">
+              {Envio automático de NF-e|Notificação de documento fiscal|NF-e · {{data}}}<span data-from>{{from}}</span> · {{uniq}}<br />
+              {Guarde este e-mail para seus registros fiscais.|Este documento pode ser necessário para declaração e garantia.}
+              <br /><span style="color:#cbd5e1;">{Se você não reconhece esta nota, ignore esta mensagem.}</span>
             </td>
           </tr>
 

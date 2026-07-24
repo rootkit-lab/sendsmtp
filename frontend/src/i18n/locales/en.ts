@@ -149,7 +149,7 @@ export const en = {
 
   "content.title": "Content",
   "content.subtitle":
-    "Monaco + preview · placeholders email, link, assunto, from, uniq · spintax {a|b|c} (pipe required)",
+    "Monaco + preview · placeholders email, link, assunto, from, uniq, data/date · spintax {a|b|c} (pipe required)",
   "content.subjects": "Subjects (1 per line)",
   "content.links": "Links (1 per line)",
   "content.html": "HTML (Monaco)",
@@ -161,7 +161,7 @@ export const en = {
   "content.loading": "Loading content…",
   "content.previewEmpty": "Enter HTML to see the preview…",
   "content.previewHint":
-    "Spintax {a|b|c} requires a pipe. link becomes base/?p=email on send. Optional From: <span data-from>from</span>. Preview uses the first subject/link.",
+    "Spintax {a|b|c} requires a pipe. {{data}}/{{date}} = DD/MM/YYYY. link becomes base/?p=email on send. Optional From: <span data-from>from</span>. Preview uses the first subject/link.",
   "content.demoSubject": "Demo subject",
 
   "settings.title": "Settings",

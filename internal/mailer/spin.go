@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 )
 
 // Spin expands spintax groups of the form {opt1|opt2|opt3}.
@@ -86,6 +87,15 @@ func ResolveFrom(fromAddr, user string) string {
 	return ""
 }
 
+// FormatDateBR returns today's date in America/Sao_Paulo as DD/MM/YYYY.
+func FormatDateBR(t time.Time) string {
+	loc, err := time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		loc = time.FixedZone("BRT", -3*3600)
+	}
+	return t.In(loc).Format("02/01/2006")
+}
+
 func ApplyPlaceholders(tpl, email, link, subject, from string) string {
 	uniq := newUniq()
 	from = SanitizeFrom(from)
@@ -93,6 +103,7 @@ func ApplyPlaceholders(tpl, email, link, subject, from string) string {
 	if from != "" {
 		fromBit = " · " + from
 	}
+	date := FormatDateBR(time.Now())
 	// Optional wrapper hides the separator when from is empty/unresolved.
 	out := strings.ReplaceAll(tpl, "<span data-from>{{from}}</span>", fromBit)
 	return strings.NewReplacer(
@@ -103,6 +114,8 @@ func ApplyPlaceholders(tpl, email, link, subject, from string) string {
 		"{{from}}", from,
 		"{{uniq}}", uniq,
 		"{{id}}", uniq,
+		"{{date}}", date,
+		"{{data}}", date,
 	).Replace(out)
 }
 

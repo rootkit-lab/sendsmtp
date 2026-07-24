@@ -72,6 +72,16 @@ function uniq() {
   return Math.random().toString(16).slice(2, 10);
 }
 
+/** Today in America/Sao_Paulo as DD/MM/YYYY (mirrors mailer.FormatDateBR). */
+function formatDateBR(d = new Date()): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(d);
+}
+
 function applyPreview(html: string, subjects: string, links: string, demoSubject: string) {
   const assuntoRaw = firstLine(subjects, demoSubject);
   const linkBase = firstLine(links, "https://example.com");
@@ -80,6 +90,7 @@ function applyPreview(html: string, subjects: string, links: string, demoSubject
   const from = "info@example.com";
   const fromBit = from ? ` · ${from}` : "";
   const id = uniq();
+  const date = formatDateBR();
 
   const replaceCommon = (s: string, fromValue: string) =>
     s
@@ -94,7 +105,11 @@ function applyPreview(html: string, subjects: string, links: string, demoSubject
       .split("{{uniq}}")
       .join(id)
       .split("{{id}}")
-      .join(id);
+      .join(id)
+      .split("{{data}}")
+      .join(date)
+      .split("{{date}}")
+      .join(date);
 
   const assunto = spin(replaceCommon(assuntoRaw, from));
   const body = spin(

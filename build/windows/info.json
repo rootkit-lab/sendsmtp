@@ -1,10 +1,10 @@
 {
 	"fixed": {
-		"file_version": "0.1.0"
+		"file_version": "0.1.1"
 	},
 	"info": {
 		"0000": {
-			"ProductVersion": "0.1.0",
+			"ProductVersion": "0.1.1",
 			"CompanyName": "SendSMTP",
 			"FileDescription": "SendSMTP — SMTP campaign desktop app",
 			"LegalCopyright": "© 2026 SendSMTP contributors",
