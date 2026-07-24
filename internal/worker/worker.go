@@ -12,6 +12,7 @@ import (
 	"github.com/wiz/sendsmtp/internal/agentclient"
 	"github.com/wiz/sendsmtp/internal/config"
 	"github.com/wiz/sendsmtp/internal/mailer"
+	"github.com/wiz/sendsmtp/internal/shortener"
 	"github.com/wiz/sendsmtp/internal/store"
 )
 
@@ -44,10 +45,16 @@ type Runner struct {
 
 	histMu      sync.Mutex
 	rateHistory []RatePoint
+
+	shortMu        sync.Mutex
+	shortPool      []string
+	shortSince     atomic.Int64 // successful sends since last pool refresh
+	shortClient    *shortener.Client
+	shortRefreshing atomic.Bool
 }
 
 func New(st *store.Store, cfg config.Config, emit EventEmitter) *Runner {
-	r := &Runner{store: st, cfg: cfg, emit: emit, rateHistory: make([]RatePoint, 0, 60)}
+	r := &Runner{store: st, cfg: cfg, emit: emit, rateHistory: make([]RatePoint, 0, 60), shortClient: shortener.New()}
 	r.windowStart.Store(time.Now().UnixNano())
 	return r
 }
@@ -82,6 +89,10 @@ func (r *Runner) Start() error {
 	r.running = true
 	r.windowStart.Store(time.Now().UnixNano())
 	r.sentThisWindow.Store(0)
+	r.shortSince.Store(0)
+	r.shortMu.Lock()
+	r.shortPool = nil
+	r.shortMu.Unlock()
 	r.histMu.Lock()
 	r.rateHistory = r.rateHistory[:0]
 	r.histMu.Unlock()
@@ -239,7 +250,7 @@ func (r *Runner) worker(ctx context.Context, cfg config.Config, rr, srvRR *atomi
 		if err != nil || subject == "" {
 			subject = "Hello"
 		}
-		link, _ := r.store.RandomLink()
+		link, _ := r.pickCampaignLink(cfg)
 		link = mailer.PersonalizeLink(link, email.Address)
 		html := camp.HTML
 		if html == "" {
@@ -313,7 +324,97 @@ func (r *Runner) worker(ctx context.Context, cfg config.Config, rr, srvRR *atomi
 		_ = r.store.RecordSMTPSuccess(acc.ID)
 		_ = r.store.MarkEmailSent(email.ID, acc.ID, subj, link)
 		r.sentThisWindow.Add(1)
+		if cfg.Shortener.Enabled {
+			r.shortSince.Add(1)
+		}
 	}
+}
+
+func (r *Runner) pickCampaignLink(cfg config.Config) (string, error) {
+	if !cfg.Shortener.Enabled {
+		return r.store.RandomLink()
+	}
+
+	every := cfg.Shortener.EveryN
+	if every <= 0 {
+		every = 100
+	}
+
+	r.shortMu.Lock()
+	needRefresh := len(r.shortPool) == 0 || int(r.shortSince.Load()) >= every
+	if !needRefresh && len(r.shortPool) > 0 {
+		link := r.shortPool[int(time.Now().UnixNano())%len(r.shortPool)]
+		r.shortMu.Unlock()
+		return link, nil
+	}
+	r.shortMu.Unlock()
+
+	if err := r.refreshShortPool(cfg); err != nil {
+		if r.emit != nil {
+			r.emit("shortener:error", map[string]any{"error": err.Error()})
+		}
+		return r.store.RandomLink()
+	}
+
+	r.shortMu.Lock()
+	defer r.shortMu.Unlock()
+	if len(r.shortPool) == 0 {
+		return r.store.RandomLink()
+	}
+	return r.shortPool[int(time.Now().UnixNano())%len(r.shortPool)], nil
+}
+
+func (r *Runner) refreshShortPool(cfg config.Config) error {
+	if !r.shortRefreshing.CompareAndSwap(false, true) {
+		// Another worker is refreshing — wait briefly for pool.
+		for i := 0; i < 40; i++ {
+			time.Sleep(250 * time.Millisecond)
+			r.shortMu.Lock()
+			n := len(r.shortPool)
+			r.shortMu.Unlock()
+			if n > 0 {
+				return nil
+			}
+		}
+		return errors.New("shortener refresh busy")
+	}
+	defer r.shortRefreshing.Store(false)
+
+	bases, err := r.store.ListLinks()
+	if err != nil {
+		return err
+	}
+	if len(bases) == 0 {
+		return errors.New("no content links to shorten")
+	}
+
+	batch := cfg.Shortener.BatchSize
+	if batch <= 0 {
+		batch = 10
+	}
+	conc := cfg.Shortener.Concurrency
+	if conc <= 0 {
+		conc = 6
+	}
+	if r.shortClient == nil {
+		r.shortClient = shortener.New()
+	}
+	if r.emit != nil {
+		r.emit("shortener:refresh", map[string]any{"batch": batch, "bases": len(bases)})
+	}
+	shorts := r.shortClient.ShortenBatch(bases, batch, conc)
+	if len(shorts) == 0 {
+		return errors.New("abre.ai returned 0 short links")
+	}
+
+	r.shortMu.Lock()
+	r.shortPool = shorts
+	r.shortMu.Unlock()
+	r.shortSince.Store(0)
+	if r.emit != nil {
+		r.emit("shortener:ready", map[string]any{"count": len(shorts)})
+	}
+	return nil
 }
 
 func min(a, b int) int {

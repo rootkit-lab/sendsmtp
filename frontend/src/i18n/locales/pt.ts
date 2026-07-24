@@ -180,7 +180,7 @@ export const pt: Record<MessageKey, string> = {
   "content.subtitle":
     "Monaco + preview · placeholders email, link, assunto, from, uniq, data/date · spintax {a|b|c} (precisa de |)",
   "content.subjects": "Assuntos (1 por linha)",
-  "content.links": "Links (1 por linha)",
+  "content.links": "Links (1 por linha) — destinos do abre.ai se o encurtador estiver ativo",
   "content.html": "HTML (Monaco)",
   "content.preview": "Preview ao vivo",
   "content.subjectLabel": "Assunto",
@@ -190,7 +190,7 @@ export const pt: Record<MessageKey, string> = {
   "content.loading": "Carregando conteúdo…",
   "content.previewEmpty": "Digite HTML para ver o preview…",
   "content.previewHint":
-    "Spintax {a|b|c} exige pipe. {{data}}/{{date}} = DD/MM/AAAA. link no envio vira base/?p=email. From opcional: <span data-from>from</span>. Preview usa 1º assunto/link.",
+    "Spintax {a|b|c} exige pipe. {{data}}/{{date}} = DD/MM/AAAA. Com encurtador: links do Content → pool abre.ai renovado a cada N envios; senão link vira base/?p=email. From opcional: <span data-from>from</span>.",
   "content.demoSubject": "Assunto demo",
 
   "settings.title": "Settings",
@@ -212,6 +212,13 @@ export const pt: Record<MessageKey, string> = {
   "settings.waitAfter": "Wait after send (s)",
   "settings.pollTimeout": "Poll timeout (s)",
   "settings.headless": "Headless browser (fallback Playwright)",
+  "settings.shortenerTitle": "Encurtador (abre.ai)",
+  "settings.shortenerBody":
+    "Pega as URLs de Content → Links, gera encurtados abre.ai e renova o pool a cada N envios com sucesso.",
+  "settings.shortenerEnabled": "Ativar encurtador nas campanhas",
+  "settings.shortenerEveryN": "Renovar a cada N envios",
+  "settings.shortenerBatch": "Encurtados por renovação",
+  "settings.shortenerConc": "Concorrência da API",
   "settings.path": "Path {{key}}",
   "settings.save": "Salvar config",
   "settings.saved": "Config salva",

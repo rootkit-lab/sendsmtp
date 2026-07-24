@@ -22,6 +22,7 @@ export class Config {
     "from_name": string;
     "rate_per_smtp_per_min": number;
     "inbox_check": InboxCheckConfig;
+    "shortener": ShortenerConfig;
     "paths": Paths;
 
     /** Creates a new Config instance. */
@@ -62,6 +63,9 @@ export class Config {
         if (!("inbox_check" in $$source)) {
             this["inbox_check"] = (new InboxCheckConfig());
         }
+        if (!("shortener" in $$source)) {
+            this["shortener"] = (new ShortenerConfig());
+        }
         if (!("paths" in $$source)) {
             this["paths"] = (new Paths());
         }
@@ -75,12 +79,16 @@ export class Config {
     static createFrom($$source: any = {}): Config {
         const $$createField11_0 = $$createType0;
         const $$createField12_0 = $$createType1;
+        const $$createField13_0 = $$createType2;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("inbox_check" in $$parsedSource) {
             $$parsedSource["inbox_check"] = $$createField11_0($$parsedSource["inbox_check"]);
         }
+        if ("shortener" in $$parsedSource) {
+            $$parsedSource["shortener"] = $$createField12_0($$parsedSource["shortener"]);
+        }
         if ("paths" in $$parsedSource) {
-            $$parsedSource["paths"] = $$createField12_0($$parsedSource["paths"]);
+            $$parsedSource["paths"] = $$createField13_0($$parsedSource["paths"]);
         }
         return new Config($$parsedSource as Partial<Config>);
     }
@@ -114,7 +122,7 @@ export class InboxCheckConfig {
      * Creates a new InboxCheckConfig instance from a string or object.
      */
     static createFrom($$source: any = {}): InboxCheckConfig {
-        const $$createField3_0 = $$createType3;
+        const $$createField3_0 = $$createType4;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("seeds" in $$parsedSource) {
             $$parsedSource["seeds"] = $$createField3_0($$parsedSource["seeds"]);
@@ -160,8 +168,57 @@ export class Paths {
     }
 }
 
+/**
+ * ShortenerConfig controls abre.ai link rotation during campaigns.
+ */
+export class ShortenerConfig {
+    "enabled": boolean;
+
+    /**
+     * refresh pool after N successful sends
+     */
+    "every_n": number;
+
+    /**
+     * shorts to generate per refresh
+     */
+    "batch_size": number;
+
+    /**
+     * parallel abre.ai calls
+     */
+    "concurrency": number;
+
+    /** Creates a new ShortenerConfig instance. */
+    constructor($$source: Partial<ShortenerConfig> = {}) {
+        if (!("enabled" in $$source)) {
+            this["enabled"] = false;
+        }
+        if (!("every_n" in $$source)) {
+            this["every_n"] = 0;
+        }
+        if (!("batch_size" in $$source)) {
+            this["batch_size"] = 0;
+        }
+        if (!("concurrency" in $$source)) {
+            this["concurrency"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new ShortenerConfig instance from a string or object.
+     */
+    static createFrom($$source: any = {}): ShortenerConfig {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new ShortenerConfig($$parsedSource as Partial<ShortenerConfig>);
+    }
+}
+
 // Private type creation functions
 const $$createType0 = InboxCheckConfig.createFrom;
-const $$createType1 = Paths.createFrom;
-const $$createType2 = inboxcheck$0.Seed.createFrom;
-const $$createType3 = $Create.Array($$createType2);
+const $$createType1 = ShortenerConfig.createFrom;
+const $$createType2 = Paths.createFrom;
+const $$createType3 = inboxcheck$0.Seed.createFrom;
+const $$createType4 = $Create.Array($$createType3);

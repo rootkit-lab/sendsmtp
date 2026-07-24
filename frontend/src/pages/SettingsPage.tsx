@@ -123,6 +123,77 @@ export function SettingsPage() {
         </label>
       </section>
 
+      <section className="space-y-3 rounded-lg border border-stone-300/80 bg-white/60 p-4">
+        <h2 className="text-sm font-semibold text-stone-800">{t("settings.shortenerTitle")}</h2>
+        <p className="text-xs text-stone-500">{t("settings.shortenerBody")}</p>
+        <label className="flex items-center gap-2 text-sm text-stone-700">
+          <input
+            type="checkbox"
+            checked={!!cfg.shortener?.enabled}
+            onChange={(e) =>
+              setCfg({
+                ...cfg,
+                shortener: {
+                  ...(cfg.shortener || { every_n: 100, batch_size: 10, concurrency: 6 }),
+                  enabled: e.target.checked,
+                },
+              })
+            }
+          />
+          {t("settings.shortenerEnabled")}
+        </label>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div>
+            <Label>{t("settings.shortenerEveryN")}</Label>
+            <Input
+              type="number"
+              value={cfg.shortener?.every_n ?? 100}
+              onChange={(e) =>
+                setCfg({
+                  ...cfg,
+                  shortener: {
+                    ...(cfg.shortener || { enabled: false, batch_size: 10, concurrency: 6 }),
+                    every_n: Number(e.target.value) || 0,
+                  },
+                })
+              }
+            />
+          </div>
+          <div>
+            <Label>{t("settings.shortenerBatch")}</Label>
+            <Input
+              type="number"
+              value={cfg.shortener?.batch_size ?? 10}
+              onChange={(e) =>
+                setCfg({
+                  ...cfg,
+                  shortener: {
+                    ...(cfg.shortener || { enabled: false, every_n: 100, concurrency: 6 }),
+                    batch_size: Number(e.target.value) || 0,
+                  },
+                })
+              }
+            />
+          </div>
+          <div>
+            <Label>{t("settings.shortenerConc")}</Label>
+            <Input
+              type="number"
+              value={cfg.shortener?.concurrency ?? 6}
+              onChange={(e) =>
+                setCfg({
+                  ...cfg,
+                  shortener: {
+                    ...(cfg.shortener || { enabled: false, every_n: 100, batch_size: 10 }),
+                    concurrency: Number(e.target.value) || 0,
+                  },
+                })
+              }
+            />
+          </div>
+        </div>
+      </section>
+
       <div className="grid gap-3 sm:grid-cols-2">
         {(["smtps", "emails", "subjects", "links", "html"] as const).map((k) => (
           <div key={k}>

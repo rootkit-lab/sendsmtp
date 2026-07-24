@@ -4,5 +4,6 @@
 export {
     Config,
     InboxCheckConfig,
-    Paths
+    Paths,
+    ShortenerConfig
 } from "./models.js";

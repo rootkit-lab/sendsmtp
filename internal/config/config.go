@@ -23,6 +23,14 @@ type InboxCheckConfig struct {
 	Seeds      []inboxcheck.Seed `yaml:"seeds" json:"seeds"`
 }
 
+// ShortenerConfig controls abre.ai link rotation during campaigns.
+type ShortenerConfig struct {
+	Enabled     bool `yaml:"enabled" json:"enabled"`
+	EveryN      int  `yaml:"every_n" json:"every_n"`           // refresh pool after N successful sends
+	BatchSize   int  `yaml:"batch_size" json:"batch_size"`     // shorts to generate per refresh
+	Concurrency int  `yaml:"concurrency" json:"concurrency"` // parallel abre.ai calls
+}
+
 type Config struct {
 	Database              string           `yaml:"database" json:"database"`
 	Workers               int              `yaml:"workers" json:"workers"`
@@ -36,6 +44,7 @@ type Config struct {
 	FromName              string           `yaml:"from_name" json:"from_name"`
 	RatePerSMTPPerMin     int              `yaml:"rate_per_smtp_per_min" json:"rate_per_smtp_per_min"`
 	InboxCheck            InboxCheckConfig `yaml:"inbox_check" json:"inbox_check"`
+	Shortener             ShortenerConfig  `yaml:"shortener" json:"shortener"`
 	Paths                 Paths            `yaml:"paths" json:"paths"`
 }
 
@@ -57,6 +66,12 @@ func Default() Config {
 			WaitSec:    60,
 			TimeoutSec: 240,
 			Seeds:      nil,
+		},
+		Shortener: ShortenerConfig{
+			Enabled:     false,
+			EveryN:      100,
+			BatchSize:   10,
+			Concurrency: 6,
 		},
 		Paths: Paths{
 			Smtps:    "data/smtps.txt",
@@ -133,6 +148,15 @@ func (c *Config) ApplyDefaults() {
 	}
 	if c.InboxCheck.TimeoutSec <= 0 {
 		c.InboxCheck.TimeoutSec = d.InboxCheck.TimeoutSec
+	}
+	if c.Shortener.EveryN <= 0 {
+		c.Shortener.EveryN = d.Shortener.EveryN
+	}
+	if c.Shortener.BatchSize <= 0 {
+		c.Shortener.BatchSize = d.Shortener.BatchSize
+	}
+	if c.Shortener.Concurrency <= 0 {
+		c.Shortener.Concurrency = d.Shortener.Concurrency
 	}
 }
 

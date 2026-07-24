@@ -9,6 +9,12 @@ smtp_disable_after_fails: 5
 batch_commit: 100
 from_name: ""
 rate_per_smtp_per_min: 0
+shortener:
+  # Encurta links do Content via abre.ai; renova o pool a cada every_n envios
+  enabled: true
+  every_n: 100
+  batch_size: 10
+  concurrency: 6
 inbox_check:
   # Free MailReach spam test (https://www.mailreach.co/email-spam-test)
   # ~3 tests / 24h on free tier. headless only used for Playwright fallback.

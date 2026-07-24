@@ -178,7 +178,7 @@ export const en = {
   "content.subtitle":
     "Monaco + preview · placeholders email, link, assunto, from, uniq, data/date · spintax {a|b|c} (pipe required)",
   "content.subjects": "Subjects (1 per line)",
-  "content.links": "Links (1 per line)",
+  "content.links": "Links (1 per line) — destinations for abre.ai when shortener is on",
   "content.html": "HTML (Monaco)",
   "content.preview": "Live preview",
   "content.subjectLabel": "Subject",
@@ -188,7 +188,7 @@ export const en = {
   "content.loading": "Loading content…",
   "content.previewEmpty": "Enter HTML to see the preview…",
   "content.previewHint":
-    "Spintax {a|b|c} requires a pipe. {{data}}/{{date}} = DD/MM/YYYY. link becomes base/?p=email on send. Optional From: <span data-from>from</span>. Preview uses the first subject/link.",
+    "Spintax {a|b|c} requires a pipe. {{data}}/{{date}} = DD/MM/YYYY. With shortener: Content links → abre.ai pool rotated every N sends; else link becomes base/?p=email. Optional From: <span data-from>from</span>.",
   "content.demoSubject": "Demo subject",
 
   "settings.title": "Settings",
@@ -210,6 +210,13 @@ export const en = {
   "settings.waitAfter": "Wait after send (s)",
   "settings.pollTimeout": "Poll timeout (s)",
   "settings.headless": "Headless browser (Playwright fallback)",
+  "settings.shortenerTitle": "Link shortener (abre.ai)",
+  "settings.shortenerBody":
+    "Takes destination URLs from Content → Links, creates abre.ai shorts, and refreshes the pool every N successful sends.",
+  "settings.shortenerEnabled": "Enable shortener during campaigns",
+  "settings.shortenerEveryN": "Refresh every N sends",
+  "settings.shortenerBatch": "Shorts per refresh",
+  "settings.shortenerConc": "API concurrency",
   "settings.path": "Path {{key}}",
   "settings.save": "Save config",
   "settings.saved": "Config saved",

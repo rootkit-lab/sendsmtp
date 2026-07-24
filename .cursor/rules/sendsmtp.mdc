@@ -15,8 +15,9 @@ alwaysApply: true
   - `from` / `user` must be real emails — `${MAIL_USERNAME}` is not expanded; sanitized in `mailer.SanitizeFrom` / `ResolveFrom`.
 - IMAP extract (SMTPs → Extract contacts): discovers IMAP, scrapes INBOX/Sent for contacts + `email;password`, writes `data/extracted/`, imports contacts into the email queue and creds as SMTPs.
 - Templates: `data/msg.html`, `data/assuntos.txt` (see `data/README.md`).
-- Placeholders: `{{email}}`, `{{link}}`, `{{assunto}}`, `{{subject}}`, `{{from}}`, `{{uniq}}`, `{{id}}`.
-- On send, `{{link}}` is personalized via `mailer.PersonalizeLink` → `base/?p=<email>` (URL-encoded). Do not hardcode `?p=` in templates or `links.txt`.
+- Placeholders: `{{email}}`, `{{link}}`, `{{assunto}}`, `{{subject}}`, `{{from}}`, `{{uniq}}`, `{{id}}`, `{{data}}`/`{{date}}`.
+- Optional shortener (`shortener` in config): Content links → abre.ai pool; refresh every `every_n` successful sends (`internal/shortener`).
+- On send, `{{link}}` is personalized via `mailer.PersonalizeLink` → `base/?p=<email>` (URL-encoded). With shortener, base is the abre.ai short URL.
 - Optional footer From: `<span data-from>{{from}}</span>` (omitted when From empty/unresolved).
 - Spintax: `{a|b|c}` — requires `|`; `{Status}` alone stays literal.
 - Email import: always normalize + dedupe; optional DNS validate is paced (not a DNS flood). Large lists: Import file, not paste.

@@ -22,7 +22,7 @@ func main() {
 		log.Fatal("-token or AGENT_TOKEN required")
 	}
 
-	h := agentapi.NewHandler(*token, "0.1.3", *conc)
+	h := agentapi.NewHandler(*token, "0.1.4", *conc)
 	mux := http.NewServeMux()
 	h.Register(mux)
 
