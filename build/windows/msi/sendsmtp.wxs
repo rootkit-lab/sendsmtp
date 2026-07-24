@@ -11,7 +11,7 @@
       InstallerVersion="500"
       Compressed="yes"
       InstallScope="perMachine"
-      Description="SendSMTP — SMTP campaign desktop app"
+      Description="SendSMTP - SMTP campaign desktop app"
       Manufacturer="SendSMTP" />
 
     <MajorUpgrade
