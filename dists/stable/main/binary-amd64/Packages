@@ -55,3 +55,22 @@ Description: Desktop SMTP campaign tool (Wails + React + SQLite).
  Import SMTPs, manage email queues, and send campaigns.
 License: MIT
 
+Package: sendsmtp
+Architecture: amd64
+Version: 0.1.3-1
+Priority: optional
+Section: mail
+Maintainer: SendSMTP <noreply@github.com>
+Installed-Size: 22403
+Depends: libgtk-3-0, libwebkit2gtk-4.1-0
+Filename: pool/main/sendsmtp_0.1.3-1_amd64.deb
+Size: 9755910
+MD5sum: d049c5d8b6baa261fd3fcb0793095baa
+SHA1: f97c75c4bb2675be8564a63f7d593081b35a326c
+SHA256: 363143b0f2086af6722c8d170eb646ad2c506ee93bb5473f848e2890bc4e8546
+SHA512: 09accd620c2fe7bbd5c5dc53c2ae227a4bc4d8d4315381d6260335592a2b9b3aa61e5d6792ce89574f288940a28bef854855c3aeedfa06f38aba0825d376bfeb
+Homepage: https://github.com/rootkit-lab/sendsmtp
+Description: Desktop SMTP campaign tool (Wails + React + SQLite).
+ Import SMTPs, manage email queues, and send campaigns.
+License: MIT
+
