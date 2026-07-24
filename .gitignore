@@ -24,3 +24,5 @@ data/extracted/
 !.vscode/extensions.json
 *.swp
 *~
+
+# socks5d binary is built into internal/proxydeploy/embed/ (committed for go:embed)

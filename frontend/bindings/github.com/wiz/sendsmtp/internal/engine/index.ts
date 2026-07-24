@@ -3,6 +3,7 @@
 
 export {
     AnalyzeAllResult,
+    DeployServerResult,
     ExtractMailboxResult,
     ImportResult,
     Stats

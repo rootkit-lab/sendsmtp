@@ -1,6 +1,7 @@
 package mailer
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"net"
@@ -18,6 +19,9 @@ type Message struct {
 	Subject  string
 	HTML     string
 }
+
+// DialFunc dials a network address (optionally through a SOCKS proxy).
+type DialFunc func(ctx context.Context, network, address string) (net.Conn, error)
 
 func BuildMIME(msg Message) []byte {
 	fromHeader := msg.From
@@ -41,30 +45,52 @@ func sanitizeHeader(s string) string {
 	return s
 }
 
-// Send delivers a message using the given SMTP account.
+// Send delivers a message using the given SMTP account (direct dial).
 func Send(acc store.SMTP, msg Message, dialTimeout, sendTimeout time.Duration) error {
+	return SendDial(acc, msg, dialTimeout, sendTimeout, nil)
+}
+
+// SendDial is like Send but uses dial (e.g. SOCKS5) when non-nil.
+func SendDial(acc store.SMTP, msg Message, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
 	addr := fmt.Sprintf("%s:%d", acc.Host, acc.Port)
 	raw := BuildMIME(msg)
+	if dial == nil {
+		dial = directDial(dialTimeout)
+	}
 
 	switch strings.ToLower(acc.Encryption) {
 	case "ssl", "tls":
-		// Implicit TLS (typically 465). Also used when user labels STARTTLS port as "tls".
 		if acc.Port == 587 {
-			return sendSTARTTLS(acc, addr, msg.From, msg.To, raw, dialTimeout, sendTimeout)
+			return sendSTARTTLS(acc, addr, msg.From, msg.To, raw, dialTimeout, sendTimeout, dial)
 		}
-		return sendImplicitTLS(acc, addr, msg.From, msg.To, raw, dialTimeout, sendTimeout)
+		return sendImplicitTLS(acc, addr, msg.From, msg.To, raw, dialTimeout, sendTimeout, dial)
 	case "starttls":
-		return sendSTARTTLS(acc, addr, msg.From, msg.To, raw, dialTimeout, sendTimeout)
+		return sendSTARTTLS(acc, addr, msg.From, msg.To, raw, dialTimeout, sendTimeout, dial)
 	default:
-		return sendPlain(acc, addr, msg.From, msg.To, raw, dialTimeout, sendTimeout)
+		return sendPlain(acc, addr, msg.From, msg.To, raw, dialTimeout, sendTimeout, dial)
 	}
 }
 
-func sendImplicitTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration) error {
-	dialer := &net.Dialer{Timeout: dialTimeout}
-	conn, err := tls.DialWithDialer(dialer, "tcp", addr, &tls.Config{ServerName: acc.Host, MinVersion: tls.VersionTLS12})
+func directDial(dialTimeout time.Duration) DialFunc {
+	d := &net.Dialer{Timeout: dialTimeout}
+	return d.DialContext
+}
+
+func dialTCP(dial DialFunc, addr string, dialTimeout time.Duration) (net.Conn, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dialTimeout)
+	defer cancel()
+	return dial(ctx, "tcp", addr)
+}
+
+func sendImplicitTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
+	rawConn, err := dialTCP(dial, addr, dialTimeout)
 	if err != nil {
 		return fmt.Errorf("tls dial: %w", err)
+	}
+	conn := tls.Client(rawConn, &tls.Config{ServerName: acc.Host, MinVersion: tls.VersionTLS12})
+	if err := conn.Handshake(); err != nil {
+		_ = rawConn.Close()
+		return fmt.Errorf("tls handshake: %w", err)
 	}
 	defer conn.Close()
 	_ = conn.SetDeadline(time.Now().Add(sendTimeout))
@@ -76,8 +102,8 @@ func sendImplicitTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTime
 	return smtpSend(client, acc, from, to, raw)
 }
 
-func sendSTARTTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration) error {
-	conn, err := net.DialTimeout("tcp", addr, dialTimeout)
+func sendSTARTTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
+	conn, err := dialTCP(dial, addr, dialTimeout)
 	if err != nil {
 		return fmt.Errorf("dial: %w", err)
 	}
@@ -96,8 +122,8 @@ func sendSTARTTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout
 	return smtpSend(client, acc, from, to, raw)
 }
 
-func sendPlain(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration) error {
-	conn, err := net.DialTimeout("tcp", addr, dialTimeout)
+func sendPlain(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
+	conn, err := dialTCP(dial, addr, dialTimeout)
 	if err != nil {
 		return fmt.Errorf("dial: %w", err)
 	}

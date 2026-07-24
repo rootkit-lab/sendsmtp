@@ -6,6 +6,7 @@ export const pt: Record<MessageKey, string> = {
 
   "nav.dashboard": "Dashboard",
   "nav.smtps": "SMTPs",
+  "nav.servers": "Servidores",
   "nav.emails": "Emails",
   "nav.content": "Conteúdo",
   "nav.settings": "Settings",
@@ -148,6 +149,32 @@ export const pt: Record<MessageKey, string> = {
   "smtps.progress.checkOne": "Check SMTP #{{id}}…",
   "smtps.progress.checkAll": "Check all: {{n}} SMTPs…",
   "smtps.progress.extractAll": "Extrair todos: {{n}}…",
+
+  "servers.title": "Servidores",
+  "servers.subtitle":
+    "Cadastre VPS (IP|senha), faça deploy do SOCKS5 numa porta livre e envie SMTP saindo desses IPs",
+  "servers.pasteLabel": "Colar servidores",
+  "servers.pasteHint":
+    "IP|senha (SSH root) · IP|portaPreferida|senha · ou host:porta:user:pass (SOCKS5 já ativo)",
+  "servers.placeholder":
+    "|23.27.96.206|SuaSenhaSSH\n50.114.114.33|OutraSenha\n1.2.3.4|10808|SenhaSSH\n# SOCKS existente:\n5.6.7.8:1080:sendsmtp:proxypass",
+  "servers.import": "Importar servidores",
+  "servers.importing": "Importando…",
+  "servers.deployAll": "Deploy SOCKS (todos)",
+  "servers.deployAllBusy": "Deploy…",
+  "servers.deploy": "Deploy",
+  "servers.deploying": "Deploy…",
+  "servers.delete": "Excluir",
+  "servers.empty": "Nenhum servidor cadastrado",
+  "servers.col.host": "SSH",
+  "servers.col.proxy": "SOCKS5",
+  "servers.toast.imported": "Servidores +{{inserted}} / {{updated}} upd{{invalid}}",
+  "servers.toast.invalidPart": ", {{n}} inválidos",
+  "servers.toast.deployOk": "{{host}} → :{{port}}",
+  "servers.toast.deployAll": "Deploy {{ok}}/{{total}} OK",
+  "servers.toast.testOk": "Servidor #{{id}} SOCKS OK",
+  "servers.progress.one": "Deploy servidor #{{id}}…",
+  "servers.progress.all": "Deploy {{n}} servidores…",
 
   "content.title": "Conteúdo",
   "content.subtitle":

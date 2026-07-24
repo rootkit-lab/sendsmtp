@@ -138,6 +138,38 @@ func (a *AppService) GetStats() (engine.Stats, error) {
 	return a.eng.GetStats()
 }
 
+func (a *AppService) ImportServersText(raw string) (engine.ImportResult, error) {
+	return a.eng.ImportServersText(raw)
+}
+
+func (a *AppService) ListServers() ([]store.Server, error) {
+	return a.eng.ListServers()
+}
+
+func (a *AppService) SetServerActive(id int64, active bool) error {
+	return a.eng.SetServerActive(id, active)
+}
+
+func (a *AppService) DeleteServer(id int64) error {
+	return a.eng.DeleteServer(id)
+}
+
+func (a *AppService) SetServerPreferPort(id int64, port int) error {
+	return a.eng.SetServerPreferPort(id, port)
+}
+
+func (a *AppService) DeployServer(id int64) (engine.DeployServerResult, error) {
+	return a.eng.DeployServer(id)
+}
+
+func (a *AppService) DeployAllServers() ([]engine.DeployServerResult, error) {
+	return a.eng.DeployAllServers()
+}
+
+func (a *AppService) TestServer(id int64) error {
+	return a.eng.TestServer(id)
+}
+
 func (a *AppService) Ping() string {
 	return fmt.Sprintf("sendsmtp ok")
 }

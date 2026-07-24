@@ -7,5 +7,6 @@ export {
     EmailPage,
     SMTP,
     SMTPStat,
+    Server,
     StatusCounts
 } from "./models.js";

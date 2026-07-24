@@ -76,6 +76,47 @@ export class AnalyzeAllResult {
 }
 
 /**
+ * DeployServerResult is returned per-server after SOCKS deploy.
+ */
+export class DeployServerResult {
+    "id": number;
+    "host": string;
+    "ok": boolean;
+    "port": number;
+    "message": string;
+    "error"?: string;
+
+    /** Creates a new DeployServerResult instance. */
+    constructor($$source: Partial<DeployServerResult> = {}) {
+        if (!("id" in $$source)) {
+            this["id"] = 0;
+        }
+        if (!("host" in $$source)) {
+            this["host"] = "";
+        }
+        if (!("ok" in $$source)) {
+            this["ok"] = false;
+        }
+        if (!("port" in $$source)) {
+            this["port"] = 0;
+        }
+        if (!("message" in $$source)) {
+            this["message"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new DeployServerResult instance from a string or object.
+     */
+    static createFrom($$source: any = {}): DeployServerResult {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new DeployServerResult($$parsedSource as Partial<DeployServerResult>);
+    }
+}
+
+/**
  * ExtractMailboxResult is IMAP scrape + optional import counts.
  */
 export class ExtractMailboxResult {

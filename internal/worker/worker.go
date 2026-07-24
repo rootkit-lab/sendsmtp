@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/wiz/sendsmtp/internal/config"
 	"github.com/wiz/sendsmtp/internal/mailer"
+	"github.com/wiz/sendsmtp/internal/proxyclient"
 	"github.com/wiz/sendsmtp/internal/store"
 )
 
@@ -124,13 +126,14 @@ func (r *Runner) loop(ctx context.Context, cfg config.Config) {
 		workers = 1
 	}
 	var rr atomic.Uint64
+	var srvRR atomic.Uint64
 	emptyTicks := 0
 
 	for i := 0; i < workers; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			r.worker(ctx, cfg, &rr)
+			r.worker(ctx, cfg, &rr, &srvRR)
 		}()
 	}
 
@@ -171,7 +174,7 @@ func (r *Runner) loop(ctx context.Context, cfg config.Config) {
 	}
 }
 
-func (r *Runner) worker(ctx context.Context, cfg config.Config, rr *atomic.Uint64) {
+func (r *Runner) worker(ctx context.Context, cfg config.Config, rr, srvRR *atomic.Uint64) {
 	dialTO := time.Duration(cfg.DialTimeoutSec) * time.Second
 	sendTO := time.Duration(cfg.SendTimeoutSec) * time.Second
 	backoff := time.Duration(cfg.RetryBackoffSec) * time.Second
@@ -262,8 +265,28 @@ func (r *Runner) worker(ctx context.Context, cfg config.Config, rr *atomic.Uint6
 			msg.FromName = camp.FromName
 		}
 
-		sendErr := mailer.Send(acc, msg, dialTO, sendTO)
+		var dial mailer.DialFunc
+		var srv store.Server
+		usedServer := false
+		if nSrv, _ := r.store.CountActiveServers(); nSrv > 0 {
+			soff := int(srvRR.Add(1) % uint64(nSrv))
+			if s, serr := r.store.PickActiveServer(soff); serr == nil {
+				if d, derr := proxyclient.DialerFor(s, dialTO); derr == nil {
+					dial = d
+					srv = s
+					usedServer = true
+				}
+			}
+		}
+
+		sendErr := mailer.SendDial(acc, msg, dialTO, sendTO, dial)
 		if sendErr != nil {
+			if usedServer && isProxyDialError(sendErr) {
+				disabled, _ := r.store.RecordServerFailure(srv.ID, sendErr.Error(), 5)
+				if disabled && r.emit != nil {
+					r.emit("server:updated", map[string]any{"id": srv.ID, "status": "disabled", "error": sendErr.Error()})
+				}
+			}
 			if mailer.ShouldPenalizeSMTP(sendErr) {
 				disableAfter := cfg.SMTPDisableAfterFails
 				if mailer.ClassifyError(sendErr) == mailer.ErrorSMTPFatal {
@@ -282,10 +305,25 @@ func (r *Runner) worker(ctx context.Context, cfg config.Config, rr *atomic.Uint6
 			continue
 		}
 
+		if usedServer {
+			_ = r.store.RecordServerSuccess(srv.ID)
+		}
 		_ = r.store.RecordSMTPSuccess(acc.ID)
 		_ = r.store.MarkEmailSent(email.ID, acc.ID, subj, link)
 		r.sentThisWindow.Add(1)
 	}
+}
+
+func isProxyDialError(err error) bool {
+	if err == nil {
+		return false
+	}
+	msg := strings.ToLower(err.Error())
+	return strings.Contains(msg, "socks") ||
+		strings.Contains(msg, "dial") ||
+		strings.Contains(msg, "timeout") ||
+		strings.Contains(msg, "connection refused") ||
+		strings.Contains(msg, "i/o timeout")
 }
 
 func min(a, b int) int {

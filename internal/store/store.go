@@ -176,6 +176,22 @@ CREATE TABLE IF NOT EXISTS settings (
 		`ALTER TABLE smtps ADD COLUMN spam_summary TEXT NOT NULL DEFAULT ''`,
 		`CREATE INDEX IF NOT EXISTS idx_emails_status_id ON emails(status, id)`,
 		`CREATE TABLE IF NOT EXISTS email_counts (status TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)`,
+		`CREATE TABLE IF NOT EXISTS servers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  host TEXT NOT NULL,
+  ssh_port INTEGER NOT NULL DEFAULT 22,
+  ssh_user TEXT NOT NULL DEFAULT 'root',
+  ssh_password TEXT NOT NULL DEFAULT '',
+  prefer_port INTEGER NOT NULL DEFAULT 10808,
+  proxy_port INTEGER NOT NULL DEFAULT 0,
+  proxy_user TEXT NOT NULL DEFAULT 'sendsmtp',
+  proxy_password TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'pending',
+  fail_count INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT NOT NULL DEFAULT '',
+  sent_count INTEGER NOT NULL DEFAULT 0,
+  UNIQUE(host)
+)`,
 	} {
 		_, _ = s.db.Exec(q) // ignore "duplicate column" / already exists
 	}

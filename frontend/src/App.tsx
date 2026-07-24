@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { SmtpsPage } from "@/pages/SmtpsPage";
+import { ServersPage } from "@/pages/ServersPage";
 import { EmailsPage } from "@/pages/EmailsPage";
 import { ContentPage } from "@/pages/ContentPage";
 import { SettingsPage } from "@/pages/SettingsPage";
@@ -15,6 +16,7 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/smtps" element={<SmtpsPage />} />
+          <Route path="/servers" element={<ServersPage />} />
           <Route path="/emails" element={<EmailsPage />} />
           <Route path="/content" element={<ContentPage />} />
           <Route path="/settings" element={<SettingsPage />} />

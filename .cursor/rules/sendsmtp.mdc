@@ -21,7 +21,8 @@ alwaysApply: true
 - Spintax: `{a|b|c}` — requires `|`; `{Status}` alone stays literal.
 - Email import: always normalize + dedupe; optional DNS validate is paced (not a DNS flood). Large lists: Import file, not paste.
 - Email list: `ListEmailsPage(filter, query, limit, offset)`; UNIQUE address — no re-send to already-stored/sent. Status counts via `email_counts`.
-- Do not commit secrets: `data/smtps.txt`, `data/sendsmtp.db`, `data/extracted/`, passwords.
+- Do not commit secrets: `data/smtps.txt`, `data/sendsmtp.db`, `data/extracted/`, passwords, server SSH/SOCKS creds.
+- Servers (egress): page `/servers` — import `IP|password`, deploy SOCKS5 on free port near prefer (default 10808) via SSH; campaign dials SMTP through active SOCKS so egress is the VPS IP.
 - Bindings: regenerate with `wails3 generate bindings -ts -d frontend/bindings ./...`
-- Dev: `wails3 dev` / `task dev`. CLI: `go build -o bin/sendsmtp-cli ./cmd/sendsmtp`.
+- Dev: `wails3 dev` / `task dev`. Rebuild SOCKS embed: `task socks5d`. CLI: `go build -o bin/sendsmtp-cli ./cmd/sendsmtp`.
 - **i18n**: all UI copy via `useTranslation()` / `t("key")` from `@/i18n`. Catalogs `frontend/src/i18n/locales/{en,pt}.ts`. Language switch in Settings. See skill `.cursor/skills/sendsmtp-i18n`. Never hardcode user-facing strings in React components.

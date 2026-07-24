@@ -14,7 +14,7 @@ export default defineConfig({
   // Wails asset proxy dials 127.0.0.1; binding only to ::1 leaves the window blank.
   server: {
     host: "127.0.0.1",
-    port: 9245,
+    port: 9345,
     strictPort: true,
   },
   clearScreen: false,

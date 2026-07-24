@@ -279,6 +279,76 @@ export class SMTPStat {
     }
 }
 
+/**
+ * Server is a remote VPS used as SOCKS5 egress for SMTP.
+ */
+export class Server {
+    "id": number;
+    "host": string;
+    "ssh_port": number;
+    "ssh_user": string;
+    "ssh_password"?: string;
+    "prefer_port": number;
+    "proxy_port": number;
+    "proxy_user": string;
+    "proxy_password"?: string;
+
+    /**
+     * pending | active | disabled | error
+     */
+    "status": string;
+    "fail_count": number;
+    "last_error": string;
+    "sent_count": number;
+
+    /** Creates a new Server instance. */
+    constructor($$source: Partial<Server> = {}) {
+        if (!("id" in $$source)) {
+            this["id"] = 0;
+        }
+        if (!("host" in $$source)) {
+            this["host"] = "";
+        }
+        if (!("ssh_port" in $$source)) {
+            this["ssh_port"] = 0;
+        }
+        if (!("ssh_user" in $$source)) {
+            this["ssh_user"] = "";
+        }
+        if (!("prefer_port" in $$source)) {
+            this["prefer_port"] = 0;
+        }
+        if (!("proxy_port" in $$source)) {
+            this["proxy_port"] = 0;
+        }
+        if (!("proxy_user" in $$source)) {
+            this["proxy_user"] = "";
+        }
+        if (!("status" in $$source)) {
+            this["status"] = "";
+        }
+        if (!("fail_count" in $$source)) {
+            this["fail_count"] = 0;
+        }
+        if (!("last_error" in $$source)) {
+            this["last_error"] = "";
+        }
+        if (!("sent_count" in $$source)) {
+            this["sent_count"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Server instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Server {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new Server($$parsedSource as Partial<Server>);
+    }
+}
+
 export class StatusCounts {
     "pending": number;
     "sending": number;

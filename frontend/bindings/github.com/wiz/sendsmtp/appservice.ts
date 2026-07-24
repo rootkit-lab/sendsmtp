@@ -45,21 +45,37 @@ export function DeleteAllEmails(): $CancellablePromise<number> {
     return $Call.ByID(1343239309);
 }
 
+export function DeleteServer(id: number): $CancellablePromise<void> {
+    return $Call.ByID(1902888674, id);
+}
+
+export function DeployAllServers(): $CancellablePromise<engine$0.DeployServerResult[]> {
+    return $Call.ByID(1012921400).then(($result: any) => {
+        return $$createType4($result);
+    });
+}
+
+export function DeployServer(id: number): $CancellablePromise<engine$0.DeployServerResult> {
+    return $Call.ByID(1285053774, id).then(($result: any) => {
+        return $$createType3($result);
+    });
+}
+
 export function ExtractAllSmtpContacts(): $CancellablePromise<{ [_ in string]?: engine$0.ExtractMailboxResult }> {
     return $Call.ByID(4184004127).then(($result: any) => {
-        return $$createType4($result);
+        return $$createType6($result);
     });
 }
 
 export function ExtractSmtpContacts(id: number): $CancellablePromise<engine$0.ExtractMailboxResult> {
     return $Call.ByID(3072189558, id).then(($result: any) => {
-        return $$createType3($result);
+        return $$createType5($result);
     });
 }
 
 export function GetConfig(): $CancellablePromise<config$0.Config> {
     return $Call.ByID(3902498144).then(($result: any) => {
-        return $$createType5($result);
+        return $$createType7($result);
     });
 }
 
@@ -69,79 +85,91 @@ export function GetHtml(): $CancellablePromise<string> {
 
 export function GetLinks(): $CancellablePromise<string[]> {
     return $Call.ByID(2768139127).then(($result: any) => {
-        return $$createType6($result);
+        return $$createType8($result);
     });
 }
 
 export function GetStats(): $CancellablePromise<engine$0.Stats> {
     return $Call.ByID(633111325).then(($result: any) => {
-        return $$createType7($result);
+        return $$createType9($result);
     });
 }
 
 export function GetStatus(): $CancellablePromise<store$0.StatusCounts> {
     return $Call.ByID(3451113224).then(($result: any) => {
-        return $$createType8($result);
+        return $$createType10($result);
     });
 }
 
 export function GetSubjects(): $CancellablePromise<string[]> {
     return $Call.ByID(1671728571).then(($result: any) => {
-        return $$createType6($result);
+        return $$createType8($result);
     });
 }
 
 export function ImportAll(): $CancellablePromise<{ [_ in string]?: engine$0.ImportResult }> {
     return $Call.ByID(1225466290).then(($result: any) => {
-        return $$createType10($result);
+        return $$createType12($result);
     });
 }
 
 export function ImportEmailsFile(path: string, validate: boolean): $CancellablePromise<engine$0.ImportResult> {
     return $Call.ByID(3905391460, path, validate).then(($result: any) => {
-        return $$createType9($result);
+        return $$createType11($result);
     });
 }
 
 export function ImportEmailsText(raw: string, validate: boolean): $CancellablePromise<engine$0.ImportResult> {
     return $Call.ByID(1961058889, raw, validate).then(($result: any) => {
-        return $$createType9($result);
+        return $$createType11($result);
     });
 }
 
 export function ImportLinksText(raw: string): $CancellablePromise<engine$0.ImportResult> {
     return $Call.ByID(1407052815, raw).then(($result: any) => {
-        return $$createType9($result);
+        return $$createType11($result);
+    });
+}
+
+export function ImportServersText(raw: string): $CancellablePromise<engine$0.ImportResult> {
+    return $Call.ByID(3313430, raw).then(($result: any) => {
+        return $$createType11($result);
     });
 }
 
 export function ImportSmtpsText(raw: string): $CancellablePromise<engine$0.ImportResult> {
     return $Call.ByID(1547369475, raw).then(($result: any) => {
-        return $$createType9($result);
+        return $$createType11($result);
     });
 }
 
 export function ImportSubjectsText(raw: string): $CancellablePromise<engine$0.ImportResult> {
     return $Call.ByID(3114451417, raw).then(($result: any) => {
-        return $$createType9($result);
+        return $$createType11($result);
     });
 }
 
 export function ListEmails(filter: string, limit: number, offset: number): $CancellablePromise<store$0.Email[]> {
     return $Call.ByID(3367881907, filter, limit, offset).then(($result: any) => {
-        return $$createType12($result);
+        return $$createType14($result);
     });
 }
 
 export function ListEmailsPage(filter: string, query: string, limit: number, offset: number): $CancellablePromise<store$0.EmailPage> {
     return $Call.ByID(3131950888, filter, query, limit, offset).then(($result: any) => {
-        return $$createType13($result);
+        return $$createType15($result);
+    });
+}
+
+export function ListServers(): $CancellablePromise<store$0.Server[]> {
+    return $Call.ByID(4114803254).then(($result: any) => {
+        return $$createType17($result);
     });
 }
 
 export function ListSmtps(): $CancellablePromise<store$0.SMTP[]> {
     return $Call.ByID(2265968851).then(($result: any) => {
-        return $$createType15($result);
+        return $$createType19($result);
     });
 }
 
@@ -173,12 +201,24 @@ export function SetHtml(html: string): $CancellablePromise<void> {
     return $Call.ByID(2229990455, html);
 }
 
+export function SetServerActive(id: number, active: boolean): $CancellablePromise<void> {
+    return $Call.ByID(90833431, id, active);
+}
+
+export function SetServerPreferPort(id: number, port: number): $CancellablePromise<void> {
+    return $Call.ByID(3967438840, id, port);
+}
+
 export function SetSmtpActive(id: number, active: boolean): $CancellablePromise<void> {
     return $Call.ByID(627473504, id, active);
 }
 
 export function StartCampaign(): $CancellablePromise<void> {
     return $Call.ByID(607099760);
+}
+
+export function TestServer(id: number): $CancellablePromise<void> {
+    return $Call.ByID(68715997, id);
 }
 
 export function TestSmtp(id: number, to: string): $CancellablePromise<void> {
@@ -189,16 +229,20 @@ export function TestSmtp(id: number, to: string): $CancellablePromise<void> {
 const $$createType0 = engine$0.AnalyzeAllResult.createFrom;
 const $$createType1 = inboxcheck$0.PlacementSummary.createFrom;
 const $$createType2 = $Create.Map($Create.Any, $Create.Any);
-const $$createType3 = engine$0.ExtractMailboxResult.createFrom;
-const $$createType4 = $Create.Map($Create.Any, $$createType3);
-const $$createType5 = config$0.Config.createFrom;
-const $$createType6 = $Create.Array($Create.Any);
-const $$createType7 = engine$0.Stats.createFrom;
-const $$createType8 = store$0.StatusCounts.createFrom;
-const $$createType9 = engine$0.ImportResult.createFrom;
-const $$createType10 = $Create.Map($Create.Any, $$createType9);
-const $$createType11 = store$0.Email.createFrom;
-const $$createType12 = $Create.Array($$createType11);
-const $$createType13 = store$0.EmailPage.createFrom;
-const $$createType14 = store$0.SMTP.createFrom;
-const $$createType15 = $Create.Array($$createType14);
+const $$createType3 = engine$0.DeployServerResult.createFrom;
+const $$createType4 = $Create.Array($$createType3);
+const $$createType5 = engine$0.ExtractMailboxResult.createFrom;
+const $$createType6 = $Create.Map($Create.Any, $$createType5);
+const $$createType7 = config$0.Config.createFrom;
+const $$createType8 = $Create.Array($Create.Any);
+const $$createType9 = engine$0.Stats.createFrom;
+const $$createType10 = store$0.StatusCounts.createFrom;
+const $$createType11 = engine$0.ImportResult.createFrom;
+const $$createType12 = $Create.Map($Create.Any, $$createType11);
+const $$createType13 = store$0.Email.createFrom;
+const $$createType14 = $Create.Array($$createType13);
+const $$createType15 = store$0.EmailPage.createFrom;
+const $$createType16 = store$0.Server.createFrom;
+const $$createType17 = $Create.Array($$createType16);
+const $$createType18 = store$0.SMTP.createFrom;
+const $$createType19 = $Create.Array($$createType18);

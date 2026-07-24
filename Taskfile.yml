@@ -11,7 +11,7 @@ includes:
 vars:
   APP_NAME: "sendsmtp"
   BIN_DIR: "bin"
-  VITE_PORT: '{{.WAILS_VITE_PORT | default 9245}}'
+  VITE_PORT: '{{.WAILS_VITE_PORT | default 9345}}'
 
 tasks:
   build:
@@ -38,6 +38,12 @@ tasks:
     summary: Builds Docker image for cross-compilation
     cmds:
       - task: common:setup:docker
+
+  socks5d:
+    summary: Rebuilds the linux/amd64 SOCKS5 binary embedded for remote deploy
+    cmds:
+      - mkdir -p internal/proxydeploy/embed
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o internal/proxydeploy/embed/socks5d ./cmd/socks5d
 
   build:server:
     summary: Builds the application in server mode

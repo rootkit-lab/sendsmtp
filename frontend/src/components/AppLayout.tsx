@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { LayoutDashboard, Server, Mail, FileText, Settings } from "lucide-react";
+import { LayoutDashboard, Server, Network, Mail, FileText, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 
@@ -8,6 +8,7 @@ export function AppLayout() {
   const nav = [
     { to: "/", label: t("nav.dashboard"), icon: LayoutDashboard },
     { to: "/smtps", label: t("nav.smtps"), icon: Server },
+    { to: "/servers", label: t("nav.servers"), icon: Network },
     { to: "/emails", label: t("nav.emails"), icon: Mail },
     { to: "/content", label: t("nav.content"), icon: FileText },
     { to: "/settings", label: t("nav.settings"), icon: Settings },
