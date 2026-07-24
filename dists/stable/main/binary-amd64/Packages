@@ -26,11 +26,11 @@ Maintainer: SendSMTP <noreply@github.com>
 Installed-Size: 16043
 Depends: libgtk-3-0, libwebkit2gtk-4.1-0
 Filename: pool/main/sendsmtp_0.1.1-1_amd64.deb
-Size: 6989186
-MD5sum: 419e1e90d9a51696d85701d441bf82ca
-SHA1: 233521f1c1c6380c620fe6ec113e54a85fe9041e
-SHA256: c9363e701cdaf91eb67bf2c3a393030edbcd6a839a911b66d9560581342a61aa
-SHA512: cf43eb8de6d4d9000b35950304676d99e6ca32d07e12dcada3c9771e39abd6864714d209c929ed1f18c601144c8362fd473630fe8dcb4bb5f4207e61c2f817ce
+Size: 6989184
+MD5sum: 450c997ee981e466c6e320e941f530f0
+SHA1: 191cbeca99a966560fc38540a3f20ef83fd12031
+SHA256: f7be49fc9c76f2ffb5ca51da9471629ed46184ae0c8d9be454b24e58b5f94d3c
+SHA512: 1027b0734a31d799eeb64abc8dfcf96af294650bff029883c4ee271d1e8b56aaad14ad80e852d2e7f1e3f31eedbea6c34c8a635b411b3df606ed1a77cee95d08
 Homepage: https://github.com/rootkit-lab/sendsmtp
 Description: Desktop SMTP campaign tool (Wails + React + SQLite).
  Import SMTPs, manage email queues, and send campaigns.
