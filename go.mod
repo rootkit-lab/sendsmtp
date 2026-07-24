@@ -6,10 +6,8 @@ require (
 	github.com/emersion/go-imap v1.2.1
 	github.com/emersion/go-message v0.15.0
 	github.com/spf13/cobra v1.10.2
-	github.com/things-go/go-socks5 v0.0.5
 	github.com/wailsapp/wails/v3 v3.0.0-alpha.88
 	golang.org/x/crypto v0.47.0
-	golang.org/x/net v0.49.0
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.54.0
 )
@@ -56,6 +54,7 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/wailsapp/wails/webview2 v1.0.24 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
+	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect

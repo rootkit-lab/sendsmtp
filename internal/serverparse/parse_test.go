@@ -20,7 +20,7 @@ func TestParsePipeIPPassword(t *testing.T) {
 	if list[0].Host != "23.27.96.206" || list[0].SSHPassword == "" {
 		t.Fatalf("%+v", list[0])
 	}
-	if list[0].PreferPort != 10808 {
+	if list[0].PreferPort != 18080 {
 		t.Fatalf("prefer=%d", list[0].PreferPort)
 	}
 }

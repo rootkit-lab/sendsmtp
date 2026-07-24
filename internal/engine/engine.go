@@ -616,7 +616,7 @@ func (e *Engine) TestSmtp(id int64, to string) error {
 	}
 	dialTO := time.Duration(e.Cfg.DialTimeoutSec) * time.Second
 	sendTO := time.Duration(e.Cfg.SendTimeoutSec) * time.Second
-	return mailer.Send(acc, msg, dialTO, sendTO)
+	return mailer.Send(mailer.FromStore(acc.Host, acc.Port, acc.Encryption, acc.User, acc.Password, acc.FromAddr), msg, dialTO, sendTO)
 }
 
 func (e *Engine) inboxOpts() (waitSec, timeoutSec int, opt inboxcheck.Options) {
@@ -674,7 +674,7 @@ func (e *Engine) sendSeeds(acc store.SMTP, html, subject string, seeds []string,
 			Subject:  subject,
 			HTML:     body,
 		}
-		if err := mailer.Send(acc, msg, dialTO, sendTO); err != nil {
+		if err := mailer.Send(mailer.FromStore(acc.Host, acc.Port, acc.Encryption, acc.User, acc.Password, acc.FromAddr), msg, dialTO, sendTO); err != nil {
 			fail++
 		} else {
 			ok++

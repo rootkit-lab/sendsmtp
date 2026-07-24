@@ -152,27 +152,27 @@ export const pt: Record<MessageKey, string> = {
 
   "servers.title": "Servidores",
   "servers.subtitle":
-    "Cadastre VPS (IP|senha), faça deploy do SOCKS5 numa porta livre e envie SMTP saindo desses IPs",
+    "Cadastre VPS (IP|senha), faça deploy do agent Go numa porta livre — o SMTP sai do IP do servidor",
   "servers.pasteLabel": "Colar servidores",
   "servers.pasteHint":
-    "IP|senha (SSH root) · IP|portaPreferida|senha · ou host:porta:user:pass (SOCKS5 já ativo)",
+    "IP|senha (SSH root) · IP|portaPreferida|senha · agent escuta na porta preferida (padrão 18080)",
   "servers.placeholder":
-    "|23.27.96.206|SuaSenhaSSH\n50.114.114.33|OutraSenha\n1.2.3.4|10808|SenhaSSH\n# SOCKS existente:\n5.6.7.8:1080:sendsmtp:proxypass",
+    "|23.27.96.206|SuaSenhaSSH\n50.114.114.33|OutraSenha\n1.2.3.4|18080|SenhaSSH",
   "servers.import": "Importar servidores",
   "servers.importing": "Importando…",
-  "servers.deployAll": "Deploy SOCKS (todos)",
+  "servers.deployAll": "Deploy agent (todos)",
   "servers.deployAllBusy": "Deploy…",
   "servers.deploy": "Deploy",
   "servers.deploying": "Deploy…",
   "servers.delete": "Excluir",
   "servers.empty": "Nenhum servidor cadastrado",
   "servers.col.host": "SSH",
-  "servers.col.proxy": "SOCKS5",
+  "servers.col.proxy": "Agent",
   "servers.toast.imported": "Servidores +{{inserted}} / {{updated}} upd{{invalid}}",
   "servers.toast.invalidPart": ", {{n}} inválidos",
   "servers.toast.deployOk": "{{host}} → :{{port}}",
   "servers.toast.deployAll": "Deploy {{ok}}/{{total}} OK",
-  "servers.toast.testOk": "Servidor #{{id}} SOCKS OK",
+  "servers.toast.testOk": "Servidor #{{id}} agent OK",
   "servers.progress.one": "Deploy servidor #{{id}}…",
   "servers.progress.all": "Deploy {{n}} servidores…",
 

@@ -52,7 +52,7 @@ func (s *Store) UpsertServers(list []Server) (inserted, updated int, err error) 
 			srv.SSHUser = "root"
 		}
 		if srv.PreferPort <= 0 {
-			srv.PreferPort = 10808
+			srv.PreferPort = 18080
 		}
 		if srv.ProxyUser == "" {
 			srv.ProxyUser = "sendsmtp"

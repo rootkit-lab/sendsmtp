@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS settings (
   ssh_port INTEGER NOT NULL DEFAULT 22,
   ssh_user TEXT NOT NULL DEFAULT 'root',
   ssh_password TEXT NOT NULL DEFAULT '',
-  prefer_port INTEGER NOT NULL DEFAULT 10808,
+  prefer_port INTEGER NOT NULL DEFAULT 18080,
   proxy_port INTEGER NOT NULL DEFAULT 0,
   proxy_user TEXT NOT NULL DEFAULT 'sendsmtp',
   proxy_password TEXT NOT NULL DEFAULT '',

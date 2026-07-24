@@ -150,27 +150,27 @@ export const en = {
 
   "servers.title": "Servers",
   "servers.subtitle":
-    "Register VPS (IP|password), deploy SOCKS5 on a free port, send SMTP egressing from those IPs",
+    "Register VPS (IP|password), deploy a Go send agent on a free port — SMTP runs on the server IP",
   "servers.pasteLabel": "Paste servers",
   "servers.pasteHint":
-    "IP|password (SSH root) · IP|preferPort|password · or host:port:user:pass (existing SOCKS5)",
+    "IP|password (SSH root) · IP|preferPort|password · agent listens on prefer port (default 18080)",
   "servers.placeholder":
-    "|23.27.96.206|YourSshPassword\n50.114.114.33|OtherPass\n1.2.3.4|10808|SshPass\n# existing SOCKS:\n5.6.7.8:1080:sendsmtp:proxypass",
+    "|23.27.96.206|YourSshPassword\n50.114.114.33|OtherPass\n1.2.3.4|18080|SshPass",
   "servers.import": "Import servers",
   "servers.importing": "Importing…",
-  "servers.deployAll": "Deploy SOCKS (all)",
+  "servers.deployAll": "Deploy agent (all)",
   "servers.deployAllBusy": "Deploying…",
   "servers.deploy": "Deploy",
   "servers.deploying": "Deploying…",
   "servers.delete": "Delete",
   "servers.empty": "No servers registered",
   "servers.col.host": "SSH",
-  "servers.col.proxy": "SOCKS5",
+  "servers.col.proxy": "Agent",
   "servers.toast.imported": "Servers +{{inserted}} / {{updated}} upd{{invalid}}",
   "servers.toast.invalidPart": ", {{n}} invalid",
   "servers.toast.deployOk": "{{host}} → :{{port}}",
   "servers.toast.deployAll": "Deploy {{ok}}/{{total}} OK",
-  "servers.toast.testOk": "Server #{{id}} SOCKS OK",
+  "servers.toast.testOk": "Server #{{id}} agent OK",
   "servers.progress.one": "Deploy server #{{id}}…",
   "servers.progress.all": "Deploy {{n}} servers…",
 

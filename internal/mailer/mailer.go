@@ -8,9 +8,17 @@ import (
 	"net/smtp"
 	"strings"
 	"time"
-
-	"github.com/wiz/sendsmtp/internal/store"
 )
+
+// Account is the SMTP credentials needed to deliver a message.
+type Account struct {
+	Host       string
+	Port       int
+	Encryption string
+	User       string
+	Password   string
+	FromAddr   string
+}
 
 type Message struct {
 	FromName string
@@ -20,7 +28,7 @@ type Message struct {
 	HTML     string
 }
 
-// DialFunc dials a network address (optionally through a SOCKS proxy).
+// DialFunc dials a network address (optionally through a proxy).
 type DialFunc func(ctx context.Context, network, address string) (net.Conn, error)
 
 func BuildMIME(msg Message) []byte {
@@ -46,12 +54,12 @@ func sanitizeHeader(s string) string {
 }
 
 // Send delivers a message using the given SMTP account (direct dial).
-func Send(acc store.SMTP, msg Message, dialTimeout, sendTimeout time.Duration) error {
+func Send(acc Account, msg Message, dialTimeout, sendTimeout time.Duration) error {
 	return SendDial(acc, msg, dialTimeout, sendTimeout, nil)
 }
 
-// SendDial is like Send but uses dial (e.g. SOCKS5) when non-nil.
-func SendDial(acc store.SMTP, msg Message, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
+// SendDial is like Send but uses dial when non-nil.
+func SendDial(acc Account, msg Message, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
 	addr := fmt.Sprintf("%s:%d", acc.Host, acc.Port)
 	raw := BuildMIME(msg)
 	if dial == nil {
@@ -82,7 +90,7 @@ func dialTCP(dial DialFunc, addr string, dialTimeout time.Duration) (net.Conn, e
 	return dial(ctx, "tcp", addr)
 }
 
-func sendImplicitTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
+func sendImplicitTLS(acc Account, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
 	rawConn, err := dialTCP(dial, addr, dialTimeout)
 	if err != nil {
 		return fmt.Errorf("tls dial: %w", err)
@@ -102,7 +110,7 @@ func sendImplicitTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTime
 	return smtpSend(client, acc, from, to, raw)
 }
 
-func sendSTARTTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
+func sendSTARTTLS(acc Account, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
 	conn, err := dialTCP(dial, addr, dialTimeout)
 	if err != nil {
 		return fmt.Errorf("dial: %w", err)
@@ -122,7 +130,7 @@ func sendSTARTTLS(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout
 	return smtpSend(client, acc, from, to, raw)
 }
 
-func sendPlain(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
+func sendPlain(acc Account, addr, from, to string, raw []byte, dialTimeout, sendTimeout time.Duration, dial DialFunc) error {
 	conn, err := dialTCP(dial, addr, dialTimeout)
 	if err != nil {
 		return fmt.Errorf("dial: %w", err)
@@ -137,7 +145,7 @@ func sendPlain(acc store.SMTP, addr, from, to string, raw []byte, dialTimeout, s
 	return smtpSend(client, acc, from, to, raw)
 }
 
-func smtpSend(client *smtp.Client, acc store.SMTP, from, to string, raw []byte) error {
+func smtpSend(client *smtp.Client, acc Account, from, to string, raw []byte) error {
 	if ok, _ := client.Extension("AUTH"); ok && acc.User != "" {
 		auth := smtp.PlainAuth("", acc.User, acc.Password, acc.Host)
 		if err := client.Auth(auth); err != nil {
@@ -162,4 +170,16 @@ func smtpSend(client *smtp.Client, acc store.SMTP, from, to string, raw []byte) 
 		return fmt.Errorf("close data: %w", err)
 	}
 	return client.Quit()
+}
+
+// FromStore builds an Account from common SMTP row fields.
+func FromStore(host string, port int, encryption, user, password, fromAddr string) Account {
+	return Account{
+		Host:       host,
+		Port:       port,
+		Encryption: encryption,
+		User:       user,
+		Password:   password,
+		FromAddr:   fromAddr,
+	}
 }

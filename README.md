@@ -7,7 +7,7 @@ The UI (`app.go`) and CLI (`cmd/sendsmtp`) share the same packages under `intern
 ## Features
 
 - Import SMTPs as `email;password` (auto host discovery + AUTH) or goscan blocks
-- **Egress servers**: register VPS (`IP|password`), deploy SOCKS5 on a free port, send SMTP through those IPs
+- **Egress servers**: register VPS (`IP|password`), deploy a Go **send agent** on a free port; campaigns POST SMTP jobs to the agent so mail exits from the VPS IP
 - MX-based provider detection (Locaweb → `email-ssl.com.br`, Google Workspace, Microsoft 365, …)
 - Large recipient lists via **file import** (avoids Wails IPC paste limits)
 - Optional validation: syntax + real MX + disposable blocklist

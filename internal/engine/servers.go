@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/wiz/sendsmtp/internal/proxyclient"
+	"github.com/wiz/sendsmtp/internal/agentclient"
 	"github.com/wiz/sendsmtp/internal/proxydeploy"
 	"github.com/wiz/sendsmtp/internal/serverparse"
 	"github.com/wiz/sendsmtp/internal/store"
@@ -121,18 +121,11 @@ func (e *Engine) DeployAllServers() ([]DeployServerResult, error) {
 		if srv.Status == "disabled" {
 			continue
 		}
-		if srv.ProxyPort > 0 && srv.SSHPassword == "" {
+		// Skip only pure SOCKS imports without SSH (host:port:user:pass) — rare after agent migration.
+		if srv.ProxyPort > 0 && srv.SSHPassword == "" && srv.ProxyUser == "agent" {
 			skipped = append(skipped, DeployServerResult{
 				ID: srv.ID, Host: srv.Host, OK: true, Port: srv.ProxyPort,
 				Message: "already configured",
-			})
-			continue
-		}
-		// Already deployed: skip unless user wants redeploy — keep active, don't re-upload.
-		if srv.ProxyPort > 0 && srv.Status == "active" {
-			skipped = append(skipped, DeployServerResult{
-				ID: srv.ID, Host: srv.Host, OK: true, Port: srv.ProxyPort,
-				Message: "already active",
 			})
 			continue
 		}
@@ -246,18 +239,16 @@ func (e *Engine) TestServer(id int64) error {
 		return err
 	}
 	if srv.ProxyPort <= 0 {
-		return fmt.Errorf("deploy SOCKS first")
+		return fmt.Errorf("deploy agent first")
 	}
 	dialTO := time.Duration(e.Cfg.DialTimeoutSec) * time.Second
 	if dialTO <= 0 {
 		dialTO = 15 * time.Second
 	}
-	conn, err := proxyclient.Dial(srv, "tcp", "1.1.1.1:80", dialTO)
-	if err != nil {
+	if err := agentclient.Health(srv, dialTO); err != nil {
 		_ = e.Store.SetServerError(id, err.Error())
 		return err
 	}
-	_ = conn.Close()
 	_ = e.Store.SetServerStatus(id, "active")
 	return nil
 }

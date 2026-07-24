@@ -17,12 +17,13 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-//go:embed embed/socks5d
-var socks5dBinary []byte
+//go:embed embed/sendsmtp-agent
+var agentBinary []byte
 
-const remoteBin = "/usr/local/bin/sendsmtp-socks5d"
+const remoteBin = "/usr/local/bin/sendsmtp-agent"
+const remoteOldSocks = "/usr/local/bin/sendsmtp-socks5d"
 
-// Result is the outcome of a SOCKS5 deploy on a remote host.
+// Result is the outcome of an agent deploy on a remote host.
 type Result struct {
 	ProxyPort     int    `json:"proxy_port"`
 	ProxyUser     string `json:"proxy_user"`
@@ -33,15 +34,15 @@ type Result struct {
 // ProgressFunc reports deploy phase (ssh|upload|start).
 type ProgressFunc func(phase, message string)
 
-// Deploy uploads socks5d over SSH and starts it on a free port near PreferPort.
+// Deploy uploads sendsmtp-agent over SSH and starts it on a free port near PreferPort.
 func Deploy(srv store.Server, timeout time.Duration) (Result, error) {
 	return DeployWithProgress(srv, timeout, nil)
 }
 
 // DeployWithProgress is Deploy with optional phase callbacks.
 func DeployWithProgress(srv store.Server, timeout time.Duration, onProgress ProgressFunc) (Result, error) {
-	if len(socks5dBinary) < 1000 {
-		return Result{}, fmt.Errorf("embedded socks5d binary missing — rebuild with GOOS=linux")
+	if len(agentBinary) < 1000 {
+		return Result{}, fmt.Errorf("embedded sendsmtp-agent missing — run: task agent")
 	}
 	if srv.Host == "" || srv.SSHPassword == "" {
 		return Result{}, fmt.Errorf("host and SSH password required")
@@ -65,15 +66,12 @@ func DeployWithProgress(srv store.Server, timeout time.Duration, onProgress Prog
 	}
 	prefer := srv.PreferPort
 	if prefer <= 0 {
-		prefer = 10808
+		prefer = 18080
 	}
-	user := srv.ProxyUser
-	if user == "" {
-		user = "sendsmtp"
-	}
-	pass := srv.ProxyPassword
-	if pass == "" {
-		pass = randomPass(16)
+	// proxy_user unused for agent; keep label for UI. Token = proxy_password.
+	token := srv.ProxyPassword
+	if token == "" {
+		token = randomPass(24)
 	}
 
 	emit := func(phase, msg string) {
@@ -96,7 +94,7 @@ func DeployWithProgress(srv store.Server, timeout time.Duration, onProgress Prog
 	}
 	defer client.Close()
 
-	sum := sha256.Sum256(socks5dBinary)
+	sum := sha256.Sum256(agentBinary)
 	wantHash := hex.EncodeToString(sum[:])
 
 	emit("port", fmt.Sprintf("porta livre perto de %d…", prefer))
@@ -105,7 +103,6 @@ func DeployWithProgress(srv store.Server, timeout time.Duration, onProgress Prog
 		return Result{}, err
 	}
 
-	// Skip upload when remote binary already matches.
 	needUpload := true
 	remoteHash, _ := run(client, fmt.Sprintf(
 		"sha256sum %s 2>/dev/null | awk '{print $1}'", remoteBin), cmdTO)
@@ -114,24 +111,27 @@ func DeployWithProgress(srv store.Server, timeout time.Duration, onProgress Prog
 	}
 
 	if needUpload {
-		emit("upload", fmt.Sprintf("upload gzip (~%d KB)…", len(gzipBytes())/1024))
-		if err := uploadGzipBinary(client, socks5dBinary, remoteBin, cmdTO); err != nil {
+		emit("upload", fmt.Sprintf("upload agent gzip (~%d KB)…", len(gzipBytes())/1024))
+		if err := uploadGzipBinary(client, remoteBin, cmdTO); err != nil {
 			return Result{}, fmt.Errorf("upload: %w", err)
 		}
 	} else {
-		emit("upload", "binário já no servidor (skip)")
+		emit("upload", "agent já no servidor (skip)")
 	}
 
-	emit("start", fmt.Sprintf("iniciar SOCKS :%d…", port))
-	_, _ = run(client, "pkill -f '/sendsmtp-socks5d' 2>/dev/null || true", 8*time.Second)
+	emit("start", fmt.Sprintf("iniciar agent :%d…", port))
+	// Stop old socks + previous agent.
+	_, _ = run(client, "pkill -f '/sendsmtp-socks5d' 2>/dev/null || true; pkill -f '/sendsmtp-agent' 2>/dev/null || true; rm -f "+remoteOldSocks, 8*time.Second)
+
 	startCmd := fmt.Sprintf(
-		"nohup %s -addr ':%d' -user %s -pass %s >/var/log/sendsmtp-socks5d.log 2>&1 & sleep 0.3; "+
-			"(ss -lnt 2>/dev/null | grep -q ':%d ' || netstat -lnt 2>/dev/null | grep -q ':%d ') && echo OK || (tail -n 30 /var/log/sendsmtp-socks5d.log; echo FAIL)",
-		remoteBin, port, shellQuote(user), shellQuote(pass), port, port,
+		"nohup env AGENT_TOKEN=%s %s -addr ':%d' -token %s -conc 64 >/var/log/sendsmtp-agent.log 2>&1 & sleep 0.4; "+
+			"curl -fsS --max-time 3 http://127.0.0.1:%d/health >/dev/null && echo OK || "+
+			"((ss -lnt 2>/dev/null || netstat -lnt 2>/dev/null) | grep -q ':%d ' && echo OK || (tail -n 40 /var/log/sendsmtp-agent.log; echo FAIL))",
+		shellQuote(token), remoteBin, port, shellQuote(token), port, port,
 	)
 	out, err := run(client, startCmd, cmdTO)
 	if err != nil || !strings.Contains(out, "OK") {
-		return Result{}, fmt.Errorf("start socks5d: %s", strings.TrimSpace(out))
+		return Result{}, fmt.Errorf("start agent: %s", strings.TrimSpace(out))
 	}
 
 	_, _ = run(client, fmt.Sprintf(
@@ -139,9 +139,9 @@ func DeployWithProgress(srv store.Server, timeout time.Duration, onProgress Prog
 
 	return Result{
 		ProxyPort:     port,
-		ProxyUser:     user,
-		ProxyPassword: pass,
-		Message:       fmt.Sprintf("SOCKS5 on %s:%d", srv.Host, port),
+		ProxyUser:     "agent",
+		ProxyPassword: token,
+		Message:       fmt.Sprintf("agent on %s:%d", srv.Host, port),
 	}, nil
 }
 
@@ -153,14 +153,13 @@ func gzipBytes() []byte {
 	}
 	var buf bytes.Buffer
 	zw := gzip.NewWriter(&buf)
-	_, _ = zw.Write(socks5dBinary)
+	_, _ = zw.Write(agentBinary)
 	_ = zw.Close()
 	gzipCache = buf.Bytes()
 	return gzipCache
 }
 
 func pickFreePortFast(client *ssh.Client, prefer int, timeout time.Duration) (int, error) {
-	// One remote shell: scan prefer..prefer+40 for a free listen port.
 	script := fmt.Sprintf(`
 prefer=%d
 for i in $(seq 0 40); do
@@ -178,7 +177,6 @@ exit 1
 	if err != nil || out == "" || out == "NONE" {
 		return 0, fmt.Errorf("no free port near %d", prefer)
 	}
-	// Last line in case of noise.
 	lines := strings.Fields(out)
 	p, err := strconv.Atoi(lines[len(lines)-1])
 	if err != nil || p <= 0 {
@@ -187,8 +185,7 @@ exit 1
 	return p, nil
 }
 
-func uploadGzipBinary(client *ssh.Client, data []byte, remotePath string, timeout time.Duration) error {
-	_ = data
+func uploadGzipBinary(client *ssh.Client, remotePath string, timeout time.Duration) error {
 	session, err := client.NewSession()
 	if err != nil {
 		return err

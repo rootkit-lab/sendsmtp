@@ -39,11 +39,12 @@ tasks:
     cmds:
       - task: common:setup:docker
 
-  socks5d:
-    summary: Rebuilds the linux/amd64 SOCKS5 binary embedded for remote deploy
+  agent:
+    summary: Rebuilds the linux/amd64 send agent binary embedded for remote deploy
     cmds:
       - mkdir -p internal/proxydeploy/embed
-      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o internal/proxydeploy/embed/socks5d ./cmd/socks5d
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o internal/proxydeploy/embed/sendsmtp-agent ./cmd/sendsmtp-agent
+      - rm -f internal/proxydeploy/embed/socks5d
 
   build:server:
     summary: Builds the application in server mode

@@ -59,7 +59,7 @@ func ParseLines(raw string) (servers []store.Server, invalid int) {
 
 		hostPart := parts[0]
 		pass := parts[len(parts)-1]
-		prefer := 10808
+		prefer := 18080
 		if len(parts) == 3 {
 			if p, err := strconv.Atoi(parts[1]); err == nil && p > 0 {
 				prefer = p
