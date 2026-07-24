@@ -28,7 +28,8 @@
       <Directory Id="ProgramFiles64Folder">
         <Directory Id="INSTALLFOLDER" Name="SendSMTP">
           <Component Id="MainExecutable" Guid="C9D5E1A3-6F4B-4C0D-9E3A-4B8F0C2D7A95">
-            <File Id="SendSmtpExe" Source="../../../bin/sendsmtp.exe" KeyPath="yes" />
+            <!-- Copied next to this .wxs before candle/wixl (see Taskfile / CI). -->
+            <File Id="SendSmtpExe" Source="sendsmtp.exe" KeyPath="yes" />
           </Component>
         </Directory>
       </Directory>

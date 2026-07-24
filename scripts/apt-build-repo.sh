@@ -11,11 +11,13 @@
 #   APT_SUITE            — suite/codename (default: stable)
 set -euo pipefail
 
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEB_SRC="${1:?usage: $0 <deb-dir-or-glob> <out-dir>}"
 OUT="${2:?usage: $0 <deb-dir-or-glob> <out-dir>}"
 SUITE="${APT_SUITE:-stable}"
 ORIGIN="${APT_ORIGIN:-SendSMTP}"
 LABEL="${APT_LABEL:-SendSMTP}"
+SITE_SRC="${APT_SITE_SRC:-$ROOT/website}"
 
 GNUPGHOME="${GNUPGHOME:-$(mktemp -d)}"
 export GNUPGHOME
@@ -91,17 +93,11 @@ gpg --batch --export --armor "$KEY_ID" > pubkey.asc
 gpg --batch --export "$KEY_ID" > pubkey.gpg
 
 # Human-facing docs site (keeps APT files at repo root)
-SITE_SRC="${APT_SITE_SRC:-}"
-if [[ -z "$SITE_SRC" ]]; then
-  # scripts/apt-build-repo.sh → repo root/website
-  SITE_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/website"
-fi
 if [[ -d "$SITE_SRC" ]]; then
   cp -a "$SITE_SRC"/. .
-  # Prefer committed archive pubkey over site copies
-  if [[ -f "${SITE_SRC}/../build/apt/pubkey.gpg" ]]; then
-    cp -f "${SITE_SRC}/../build/apt/pubkey.gpg" pubkey.gpg
-    cp -f "${SITE_SRC}/../build/apt/pubkey.asc" pubkey.asc 2>/dev/null || true
+  if [[ -f "$ROOT/build/apt/pubkey.gpg" ]]; then
+    cp -f "$ROOT/build/apt/pubkey.gpg" pubkey.gpg
+    cp -f "$ROOT/build/apt/pubkey.asc" pubkey.asc 2>/dev/null || true
   fi
 fi
 touch .nojekyll

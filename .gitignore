@@ -3,6 +3,7 @@ bin/
 build/apt/private.asc
 build/apt/*.key
 build/apt/*secret*
+build/windows/msi/sendsmtp.exe
 frontend/dist/
 frontend/node_modules/
 frontend/.vite/

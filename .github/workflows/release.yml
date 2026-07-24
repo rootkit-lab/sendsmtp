@@ -157,8 +157,10 @@ jobs:
         run: |
           export PATH="$HOME/go/bin:/c/Program Files (x86)/WiX Toolset v3.14/bin:/c/Program Files (x86)/NSIS:$PATH"
           wails3 task windows:build ARCH=amd64
+          cp -f bin/sendsmtp.exe build/windows/msi/sendsmtp.exe
           candle -arch x64 -out bin/sendsmtp.wixobj build/windows/msi/sendsmtp.wxs
           light -out bin/sendsmtp-amd64.msi bin/sendsmtp.wixobj
+          rm -f build/windows/msi/sendsmtp.exe
           wails3 task windows:create:nsis:installer ARCH=amd64
           ls -lah bin/
 

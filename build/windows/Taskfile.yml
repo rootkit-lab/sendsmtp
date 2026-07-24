@@ -127,7 +127,9 @@ tasks:
     deps:
       - task: build
     cmds:
+      - cp "{{.ROOT_DIR}}/{{.BIN_DIR}}/{{.APP_NAME}}.exe" "{{.ROOT_DIR}}/build/windows/msi/sendsmtp.exe"
       - wixl -a x64 -o "{{.ROOT_DIR}}/{{.BIN_DIR}}/{{.APP_NAME}}-{{.ARCH}}.msi" "{{.ROOT_DIR}}/build/windows/msi/sendsmtp.wxs"
+      - rm -f "{{.ROOT_DIR}}/build/windows/msi/sendsmtp.exe"
     vars:
       ARCH: '{{.ARCH | default "amd64"}}'
     preconditions:
